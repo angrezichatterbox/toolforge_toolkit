@@ -5,6 +5,7 @@ import uuid
 from .config_service import verify_and_read_ssh_key
 from .ssh_service import run_ssh_command_capture, upload_to_bastion
 from .download_service import download_source_files
+from github_pr_creator import create_github_action_pr
 
 def deploy_from_url(config, params):
     """Downloads source code, SCPs to bastion, and initiates webservice restart."""
@@ -170,6 +171,24 @@ toolforge webservice {python_version} restart || toolforge webservice {python_ve
         log("Cleaning up remote staging folder...")
         run_ssh_command_capture(config, f"rm -rf {remote_temp}")
         log("Remote staging cleaned.")
+        
+        # 10. Optionally raise GitHub Pull Request with CD workflow
+        app_type = params.get("app_type")
+        if app_type:
+            log(f"Triggering PR generation for continuous deployment workflow of type '{app_type}'...")
+            try:
+                github_token = os.environ.get("GITHUB_TOKEN")
+                pr_result = create_github_action_pr(
+                    repo_url=url,
+                    app_type=app_type,
+                    github_token=github_token
+                )
+                if pr_result.get("success"):
+                    log(f"Successfully raised CD Workflow PR: {pr_result['pr_url']}", "success")
+                else:
+                    log(f"Failed to raise CD Workflow PR: {pr_result.get('error')}", "warning")
+            except Exception as pr_err:
+                log(f"Failed to raise CD Workflow PR due to exception: {pr_err}", "warning")
         
         log(f"★ Flask application deployed successfully! URL: https://{tool_name}.toolforge.org/", "success")
         return {"success": True, "logs": logs, "url": f"https://{tool_name}.toolforge.org/"}
