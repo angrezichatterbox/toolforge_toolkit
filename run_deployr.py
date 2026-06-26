@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """
 Dev runner for Deployr: serves the frontend/ UI from the same origin as the
-Toolforge Manager API (so there are no CORS issues), without modifying
-toolforge_manager.py. Run:  python3 run_deployr.py --port 8080
+Toolforge Manager API (so there are no CORS issues), without modifying app.py.
+Run:  python3 run_deployr.py --port 8080
 Then open:  http://localhost:8080/
 """
 import argparse
 import os
-from toolforge_manager import app  # reuses all /api/* routes
+from app import app  # reuses all /api/* routes (blueprints registered in app.py)
 
 FRONTEND = os.path.join(os.path.dirname(os.path.abspath(__file__)), "frontend")
 

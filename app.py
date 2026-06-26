@@ -8,6 +8,7 @@ from flask import Flask, jsonify
 from routes.config import config_bp
 from routes.webservice import webservice_bp
 from routes.deploy import deploy_bp
+from routes.tools import tools_bp
 
 app = Flask(__name__)
 
@@ -15,6 +16,7 @@ app = Flask(__name__)
 app.register_blueprint(config_bp)
 app.register_blueprint(webservice_bp)
 app.register_blueprint(deploy_bp)
+app.register_blueprint(tools_bp)
 
 @app.route("/")
 def index():
@@ -23,6 +25,9 @@ def index():
         "status": "ok",
         "message": "Toolforge Manager API is running",
         "endpoints": [
+            {"path": "/api/tools", "methods": ["GET", "POST"]},
+            {"path": "/api/tools/inspect", "methods": ["POST"]},
+            {"path": "/api/tools/<id>", "methods": ["DELETE"]},
             {"path": "/api/config", "methods": ["GET", "POST"]},
             {"path": "/api/test-connection", "methods": ["POST"]},
             {"path": "/api/deploy", "methods": ["POST"]},
