@@ -29,44 +29,21 @@ The `pdf-image-identifier` card (tool `picstalker`) is the real one for end-to-e
 
 ## Running it
 
-The backend has **no CORS headers**, so the browser will block cross-origin calls.
-Pick one of these:
-
-### Option A — serve the frontend from the backend (recommended, zero CORS)
-
-Add a static route to `toolforge_manager.py` (two lines):
-
-```python
-app = Flask(__name__, static_folder="frontend", static_url_path="")
-
-@app.route("/app")
-def deployr_ui():
-    return app.send_static_file("index.html")
-```
-
-Then:
+`app.py` serves this frontend from the **same origin** as the `/api/*` backend
+(static files configured in `app.py`), so there are no CORS issues — one command:
 
 ```bash
-python toolforge_manager.py --port 5000
-# open http://localhost:5000/app   (leave API base URL blank — same origin)
+pip install -r requirements.txt        # flask + PyMySQL
+python app.py --port 8765
+# open http://localhost:8765/          (leave API base URL blank — same origin)
 ```
 
-### Option B — run the frontend separately + enable CORS
+> Avoid port `5000` (macOS AirPlay → 403) and `8080` (often Jenkins). `8765` is a safe default.
+> The API discovery banner lives at `/api`; the dashboard is at `/`.
 
-```bash
-pip install flask-cors
-```
-```python
-from flask_cors import CORS
-CORS(app)   # after app = Flask(__name__)
-```
-```bash
-# terminal 1
-python toolforge_manager.py --port 5000
-# terminal 2
-cd frontend && python -m http.server 8080
-# open http://localhost:8080 → Settings → API base URL = http://localhost:5000
-```
+A local MariaDB/MySQL must be reachable (defaults `127.0.0.1:3306`, user `root`);
+`db.py` auto-creates and seeds the `deployr` database on first start. If the DB is
+down the UI still loads with the bundled fallback list.
 
 ## First-time setup in the UI
 
