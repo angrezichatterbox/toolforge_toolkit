@@ -1,0 +1,1526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deployr - Wikimedia Toolforge Dashboard</title>
+    <!-- Google Fonts Outfit & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0b0f19;
+            --bg-secondary: #131a2b;
+            --card-bg: rgba(26, 36, 57, 0.55);
+            --card-border: rgba(255, 255, 255, 0.06);
+            --card-hover-border: rgba(6, 182, 212, 0.3);
+            
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            
+            --accent-cyan: #06b6d4;
+            --accent-blue: #3b82f6;
+            --accent-gradient: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
+            
+            --color-success: #10b981;
+            --color-warning: #f59e0b;
+            --color-danger: #ef4444;
+            --color-info: #0ea5e9;
+            
+            --font-main: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            --radius-lg: 16px;
+            --radius-md: 12px;
+            --radius-sm: 8px;
+            --transition-all: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: var(--font-main);
+            min-height: 100vh;
+            display: flex;
+            overflow-x: hidden;
+        }
+
+        /* Ambient Glow backgrounds */
+        .ambient-glow-1 {
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            left: -100px;
+            top: -100px;
+            background: radial-gradient(circle, rgba(6, 182, 212, 0.08) 0%, rgba(0,0,0,0) 70%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .ambient-glow-2 {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            right: -100px;
+            bottom: -100px;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.06) 0%, rgba(0,0,0,0) 70%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            width: 280px;
+            background-color: var(--bg-secondary);
+            border-right: 1px solid var(--card-border);
+            display: flex;
+            flex-direction: column;
+            padding: 2rem 1.5rem;
+            position: fixed;
+            height: 100vh;
+            left: 0;
+            top: 0;
+            z-index: 10;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 3rem;
+            padding-left: 0.5rem;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: var(--accent-gradient);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            color: white;
+            font-size: 1.25rem;
+            box-shadow: 0 0 20px rgba(6, 182, 212, 0.4);
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.85rem 1rem;
+            border-radius: var(--radius-md);
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition-all);
+            border: 1px solid transparent;
+        }
+
+        .nav-item:hover {
+            color: var(--text-primary);
+            background-color: rgba(255, 255, 255, 0.03);
+        }
+
+        .nav-item.active {
+            color: var(--text-primary);
+            background-color: rgba(6, 182, 212, 0.1);
+            border-color: rgba(6, 182, 212, 0.2);
+            box-shadow: inset 0 0 12px rgba(6, 182, 212, 0.05);
+        }
+
+        .nav-item svg {
+            width: 20px;
+            height: 20px;
+            stroke: currentColor;
+            stroke-width: 2;
+            fill: none;
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+            padding: 1rem 0.5rem 0;
+            border-top: 1px solid var(--card-border);
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        /* Main Content Container */
+        .main-content {
+            margin-left: 280px;
+            flex-grow: 1;
+            padding: 2.5rem 3rem;
+            max-width: 1400px;
+            width: calc(100% - 280px);
+            position: relative;
+        }
+
+        /* Header block */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .page-title h1 {
+            font-size: 2.25rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            margin-bottom: 0.25rem;
+        }
+
+        .page-title p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .status-badge-container {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background-color: var(--bg-secondary);
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            border: 1px solid var(--card-border);
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--color-warning);
+            box-shadow: 0 0 8px var(--color-warning);
+        }
+
+        .status-indicator.connected {
+            background-color: var(--color-success);
+            box-shadow: 0 0 8px var(--color-success);
+        }
+
+        .status-indicator.disconnected {
+            background-color: var(--color-danger);
+            box-shadow: 0 0 8px var(--color-danger);
+        }
+
+        /* Content Panel System */
+        .content-panel {
+            display: none;
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+
+        .content-panel.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Cards & Grid */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            transition: var(--transition-all);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            border-color: var(--card-hover-border);
+        }
+
+        .card-header {
+            margin-bottom: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-title svg {
+            width: 20px;
+            height: 20px;
+            stroke: var(--accent-cyan);
+            stroke-width: 2;
+            fill: none;
+        }
+
+        /* Form Controls */
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .form-input {
+            width: 100%;
+            background-color: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-sm);
+            padding: 0.75rem 1rem;
+            color: var(--text-primary);
+            font-family: var(--font-main);
+            font-size: 0.95rem;
+            transition: var(--transition-all);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 10px rgba(6, 182, 212, 0.15);
+            background-color: rgba(15, 23, 42, 0.85);
+        }
+
+        .form-input.code-font {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+        }
+
+        /* Buttons & Actions */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius-sm);
+            font-family: var(--font-main);
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition-all);
+            border: 1px solid transparent;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: var(--accent-gradient);
+            color: white;
+            box-shadow: 0 4px 14px rgba(6, 182, 212, 0.3);
+        }
+
+        .btn-primary:hover {
+            opacity: 0.95;
+            box-shadow: 0 6px 20px rgba(6, 182, 212, 0.45);
+            transform: translateY(-1px);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+            border-color: var(--card-border);
+        }
+
+        .btn-secondary:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .btn-danger {
+            background-color: rgba(239, 68, 68, 0.15);
+            color: #f87171;
+            border-color: rgba(239, 68, 68, 0.25);
+        }
+
+        .btn-danger:hover {
+            background-color: rgba(239, 68, 68, 0.25);
+            border-color: rgba(239, 68, 68, 0.35);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        /* Console styling */
+        .console-container {
+            margin-top: 1.5rem;
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-md);
+            background-color: #05070f;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 380px;
+        }
+
+        .console-header {
+            background-color: #0d101d;
+            border-bottom: 1px solid var(--card-border);
+            padding: 0.5rem 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .console-dots {
+            display: flex;
+            gap: 0.35rem;
+        }
+
+        .console-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #334155;
+        }
+
+        .console-dot.red { background-color: #f43f5e; }
+        .console-dot.yellow { background-color: #eab308; }
+        .console-dot.green { background-color: #10b981; }
+
+        .console-title {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .console-log {
+            padding: 1rem;
+            overflow-y: auto;
+            flex-grow: 1;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            line-height: 1.5;
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            scroll-behavior: smooth;
+        }
+
+        .log-entry {
+            border-left: 2px solid transparent;
+            padding-left: 0.5rem;
+        }
+
+        .log-entry.info {
+            color: #e2e8f0;
+        }
+
+        .log-entry.warning {
+            color: var(--color-warning);
+            border-color: var(--color-warning);
+        }
+
+        .log-entry.error {
+            color: #f87171;
+            border-color: var(--color-danger);
+            background-color: rgba(239, 68, 68, 0.05);
+        }
+
+        .log-entry.success {
+            color: #34d399;
+            border-color: var(--color-success);
+            font-weight: 600;
+        }
+
+        .log-entry.remote {
+            color: var(--accent-cyan);
+            opacity: 0.9;
+        }
+
+        /* Tables */
+        .table-container {
+            overflow-x: auto;
+            margin-top: 1rem;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--card-border);
+        }
+
+        .styled-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+            text-align: left;
+        }
+
+        .styled-table th {
+            background-color: rgba(19, 26, 43, 0.8);
+            color: var(--text-primary);
+            font-weight: 600;
+            padding: 0.85rem 1rem;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .styled-table td {
+            padding: 0.85rem 1rem;
+            border-bottom: 1px solid var(--card-border);
+            color: var(--text-secondary);
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+        }
+
+        .styled-table tbody tr:last-of-type td {
+            border-bottom: none;
+        }
+
+        .styled-table tbody tr:hover {
+            background-color: rgba(255, 255, 255, 0.02);
+        }
+
+        /* Modals / Overlays */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(11, 15, 25, 0.8);
+            backdrop-filter: blur(8px);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-lg);
+            width: 700px;
+            max-width: 90%;
+            padding: 2rem;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1.25rem;
+            font-size: 1.5rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: var(--transition-all);
+        }
+
+        .modal-close:hover {
+            color: var(--text-primary);
+        }
+
+        /* Utility Styles */
+        .flex-row {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .flex-between {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+        .space-top { margin-top: 1.5rem; }
+        .space-bottom { margin-bottom: 1.5rem; }
+        
+        .code-box {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            background-color: #05070f;
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-sm);
+            padding: 1rem;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            color: var(--text-primary);
+            max-height: 250px;
+            overflow-y: auto;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            font-family: var(--font-main);
+        }
+
+        .badge-success { background-color: rgba(16, 185, 129, 0.15); color: #34d399; }
+        .badge-warning { background-color: rgba(245, 158, 11, 0.15); color: #fbbf24; }
+        .badge-danger { background-color: rgba(239, 68, 68, 0.15); color: #f87171; }
+
+        /* Loader Animation */
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255,255,255,0.1);
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .floating-alert {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            padding: 1rem 1.5rem;
+            border-radius: var(--radius-md);
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--card-border);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: var(--transition-all);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 500;
+        }
+
+        .floating-alert.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="ambient-glow-1"></div>
+    <div class="ambient-glow-2"></div>
+
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+        <div class="logo-container">
+            <div class="logo-icon">D</div>
+            <div class="logo-text">Deployr</div>
+        </div>
+
+        <nav>
+            <ul class="nav-list">
+                <li>
+                    <a class="nav-item active" onclick="switchTab('settings')">
+                        <svg viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.1a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+                        Settings / Config
+                    </a>
+                </li>
+                <li>
+                    <a class="nav-item" onclick="switchTab('deploy')">
+                        <svg viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+                        Deploy Application
+                    </a>
+                </li>
+                <li>
+                    <a class="nav-item" onclick="switchTab('webservice')">
+                        <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"/><rect x="2" y="14" width="20" height="8" rx="2" ry="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
+                        Web Service Control
+                    </a>
+                </li>
+                <li>
+                    <a class="nav-item" onclick="switchTab('jobs')">
+                        <svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                        Kubernetes Jobs
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="sidebar-footer">
+            <span>Wikimedia Toolforge Manager</span>
+            <span>Status: Running on Localhost</span>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+        <header class="page-header">
+            <div class="page-title">
+                <h1 id="panel-title-text">Toolforge Settings</h1>
+                <p id="panel-subtitle-text">Configure access to the Toolforge cluster and SSH keys</p>
+            </div>
+
+            <div class="status-badge-container">
+                <div id="connection-status-dot" class="status-indicator"></div>
+                <span id="connection-status-text">Testing connection...</span>
+            </div>
+        </header>
+
+        <!-- Tab 1: Settings Panel -->
+        <section id="panel-settings" class="content-panel active">
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <svg viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.1a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+                            Configuration Settings
+                        </h2>
+                    </div>
+
+                    <form id="config-form" onsubmit="saveConfig(event)">
+                        <div class="form-group">
+                            <label for="config-username">Wikimedia Username</label>
+                            <input type="text" id="config-username" class="form-input" required placeholder="e.g. keerthan">
+                        </div>
+                        <div class="form-group">
+                            <label for="config-tool-name">Default Tool Name (without tools. prefix)</label>
+                            <input type="text" id="config-tool-name" class="form-input" required placeholder="e.g. my-awesome-tool">
+                        </div>
+                        <div class="form-group">
+                            <label for="config-ssh-key">Path to Private SSH Key</label>
+                            <input type="text" id="config-ssh-key" class="form-input code-font" required placeholder="e.g. /home/user/.ssh/id_rsa">
+                        </div>
+                        <div class="form-group">
+                            <label for="config-bastion-host">Bastion Host</label>
+                            <input type="text" id="config-bastion-host" class="form-input" required value="login.toolforge.org">
+                        </div>
+
+                        <div class="flex-row space-top">
+                            <button type="submit" id="btn-save-config" class="btn btn-primary">Save Configuration</button>
+                            <button type="button" onclick="testConnection()" id="btn-test-conn" class="btn btn-secondary">Test Connection</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                            Toolforge Quick Guide
+                        </h2>
+                    </div>
+                    <div style="line-height: 1.6; color: var(--text-secondary); font-size: 0.95rem; display: flex; flex-direction: column; gap: 1rem;">
+                        <p>Welcome to <strong>Deployr Dashboard</strong>! This interface connects directly to your local file system to read SSH keys and control the Wikimedia Toolforge environment.</p>
+                        <p><strong>Configuring Access:</strong> Ensure your registered public SSH key is uploaded to your Wikitech developer profile and that you provide the corresponding private key file path (e.g. <code>~/.ssh/id_rsa</code>) on the left.</p>
+                        <p><strong>Deploying Apps:</strong> Paste any public git repository or direct zip archive link into the Deploy tab to clone, package, upload, configure uWSGI, build venv and start the Toolforge webservice in one step.</p>
+                        <div style="background-color: rgba(255,255,255,0.02); border: 1px solid var(--card-border); border-radius: var(--radius-sm); padding: 1rem; margin-top: 0.5rem;">
+                            <span style="font-weight: 600; color: var(--text-primary); font-size: 0.85rem; display: block; margin-bottom: 0.25rem;">Active Configuration Directory:</span>
+                            <code style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--accent-cyan);">~/.toolforge_config.json</code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tab 2: Deploy Panel -->
+        <section id="panel-deploy" class="content-panel">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <svg viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+                        Deploy App from Repository / URL
+                    </h2>
+                </div>
+
+                <form id="deploy-form" onsubmit="triggerDeployment(event)">
+                    <div class="grid-2">
+                        <div>
+                            <div class="form-group">
+                                <label for="deploy-url">Git Repository URL or Direct Archive (.zip, .tar.gz) URL</label>
+                                <input type="url" id="deploy-url" class="form-input" required placeholder="https://github.com/username/my-flask-app.git">
+                            </div>
+                            <div class="form-group">
+                                <label for="deploy-entry">Flask App Entry File</label>
+                                <input type="text" id="deploy-entry" class="form-input code-font" required value="app.py">
+                            </div>
+                        </div>
+                        <div>
+                            <div class="form-group">
+                                <label for="deploy-var">Flask Application Variable</label>
+                                <input type="text" id="deploy-var" class="form-input code-font" required value="app">
+                            </div>
+                            <div class="form-group">
+                                <label for="deploy-python">Python Runtime Version</label>
+                                <input type="text" id="deploy-python" class="form-input code-font" required value="python3.11" placeholder="e.g. python3.11, python3.9">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-top">
+                        <button type="submit" id="btn-deploy" class="btn btn-primary">
+                            <span>Start Deploy Pipeline</span>
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Console logs window -->
+                <div class="console-container">
+                    <div class="console-header">
+                        <div class="console-dots">
+                            <div class="console-dot red"></div>
+                            <div class="console-dot yellow"></div>
+                            <div class="console-dot green"></div>
+                        </div>
+                        <div class="console-title">deployment_logs.log</div>
+                        <div></div>
+                    </div>
+                    <div id="deploy-console" class="console-log">
+                        <div class="log-entry info">Console ready. Awaiting deployment trigger...</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tab 3: Webservice Panel -->
+        <section id="panel-webservice" class="content-panel">
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"/><rect x="2" y="14" width="20" height="8" rx="2" ry="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
+                            Web Service Management
+                        </h2>
+                    </div>
+
+                    <p class="space-bottom" style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.5;">
+                        Wikimedia Toolforge web services host the HTTP web facing application. You can start, stop, or restart the server below.
+                    </p>
+
+                    <div class="form-group">
+                        <label for="ws-start-type">Framework/Python Engine (For Start command)</label>
+                        <input type="text" id="ws-start-type" class="form-input code-font" value="python3.11">
+                    </div>
+
+                    <div class="flex-row space-top" style="flex-wrap: wrap;">
+                        <button onclick="controlWebservice('start')" id="btn-ws-start" class="btn btn-primary">Start Webservice</button>
+                        <button onclick="controlWebservice('restart')" id="btn-ws-restart" class="btn btn-secondary">Restart Webservice</button>
+                        <button onclick="controlWebservice('stop')" id="btn-ws-stop" class="btn btn-danger">Stop Webservice</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <svg viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                            Status Monitor
+                        </h2>
+                        <button onclick="checkWebserviceStatus()" class="btn btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">Refresh Status</button>
+                    </div>
+
+                    <div id="ws-status-box" class="code-box">Loading webservice status...</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tab 4: Jobs Panel -->
+        <section id="panel-jobs" class="content-panel">
+            <div class="card space-bottom">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                        Submit a New Job
+                    </h2>
+                </div>
+
+                <form id="job-form" onsubmit="submitJob(event)">
+                    <div class="grid-2">
+                        <div>
+                            <div class="form-group">
+                                <label for="job-name">Job Name</label>
+                                <input type="text" id="job-name" class="form-input" required placeholder="e.g. cleanup-logs">
+                            </div>
+                            <div class="form-group">
+                                <label for="job-command">Command to Execute</label>
+                                <input type="text" id="job-command" class="form-input code-font" required placeholder="e.g. python3 scripts/clean.py">
+                            </div>
+                        </div>
+                        <div>
+                            <div class="form-group">
+                                <label for="job-image">Container Image</label>
+                                <input type="text" id="job-image" class="form-input code-font" required value="python3.11">
+                            </div>
+                            <div class="form-group">
+                                <label for="job-schedule">Cron Schedule (Optional, leave blank for one-off job)</label>
+                                <input type="text" id="job-schedule" class="form-input code-font" placeholder="e.g. */5 * * * * or blank">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="space-top">
+                        <button type="submit" id="btn-submit-job" class="btn btn-primary">Submit Job</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                        Active Kubernetes Jobs
+                    </h2>
+                    <button onclick="loadJobs()" class="btn btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">Refresh Jobs List</button>
+                </div>
+
+                <div id="jobs-loading-text" style="color: var(--text-secondary); margin-bottom: 1rem;">Loading jobs list from Toolforge cluster...</div>
+                
+                <div id="jobs-table-container" class="table-container" style="display: none;">
+                    <table class="styled-table">
+                        <thead>
+                            <tr>
+                                <th>Job Name</th>
+                                <th>Status</th>
+                                <th>Type</th>
+                                <th>Image</th>
+                                <th>Command / Schedule</th>
+                                <th style="text-align: right;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="jobs-list-body">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div id="jobs-raw-output" class="code-box space-top" style="display: none;"></div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Job Logs Modal -->
+    <div id="logs-modal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeLogsModal()">&times;</span>
+            <h2 id="modal-logs-title" class="card-title space-bottom" style="gap: 0.5rem;">Job Logs</h2>
+            
+            <div class="flex-row space-bottom">
+                <button id="btn-log-out" onclick="fetchLogType('out')" class="btn btn-primary" style="padding: 0.4rem 1rem; font-size: 0.85rem;">Standard Output (.out)</button>
+                <button id="btn-log-err" onclick="fetchLogType('err')" class="btn btn-secondary" style="padding: 0.4rem 1rem; font-size: 0.85rem;">Standard Error (.err)</button>
+            </div>
+            
+            <div id="modal-logs-box" class="code-box" style="max-height: 400px; height: 350px;">Fetching logs...</div>
+        </div>
+    </div>
+
+    <!-- Floating Alert Toast -->
+    <div id="toast" class="floating-alert">
+        <div id="toast-spinner" class="spinner" style="display:none;"></div>
+        <span id="toast-message">Notification message</span>
+    </div>
+
+    <script>
+        let currentConfig = {};
+        let activeJobName = '';
+
+        // Tab switcher
+        function switchTab(tabName) {
+            // Update active sidebar item
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => item.classList.remove('active'));
+            
+            // Set current clicked navigation item active
+            const clickedItem = Array.from(navItems).find(item => item.getAttribute('onclick').includes(tabName));
+            if (clickedItem) clickedItem.classList.add('active');
+
+            // Show current panel
+            const panels = document.querySelectorAll('.content-panel');
+            panels.forEach(panel => panel.classList.remove('active'));
+            
+            const targetPanel = document.getElementById(`panel-${tabName}`);
+            if (targetPanel) targetPanel.classList.add('active');
+
+            // Update title and subtitle
+            const titleEl = document.getElementById('panel-title-text');
+            const subtitleEl = document.getElementById('panel-subtitle-text');
+
+            if (tabName === 'settings') {
+                titleEl.textContent = 'Toolforge Settings';
+                subtitleEl.textContent = 'Configure access to the Toolforge cluster and SSH keys';
+            } else if (tabName === 'deploy') {
+                titleEl.textContent = 'Application Deployment';
+                subtitleEl.textContent = 'Deploy a Flask web app directly from a repository or file URL';
+            } else if (tabName === 'webservice') {
+                titleEl.textContent = 'Web Service Control';
+                subtitleEl.textContent = 'Manage the lifecycle of the Flask HTTP web service';
+                checkWebserviceStatus();
+            } else if (tabName === 'jobs') {
+                titleEl.textContent = 'Kubernetes Jobs';
+                subtitleEl.textContent = 'Schedule cron tasks or execute continuous backend processes';
+                loadJobs();
+            }
+        }
+
+        // Show toast notifications
+        function showToast(message, isSpinner = false, duration = 3000) {
+            const toast = document.getElementById('toast');
+            const spinner = document.getElementById('toast-spinner');
+            const text = document.getElementById('toast-message');
+            
+            text.textContent = message;
+            if (isSpinner) {
+                spinner.style.display = 'block';
+            } else {
+                spinner.style.display = 'none';
+            }
+            
+            toast.classList.add('show');
+            
+            if (!isSpinner && duration > 0) {
+                setTimeout(() => {
+                    hideToast();
+                }, duration);
+            }
+        }
+
+        // Hide toast
+        function hideToast() {
+            document.getElementById('toast').classList.remove('show');
+        }
+
+        // Fetch config from server
+        async function fetchConfig() {
+            try {
+                const response = await fetch('/api/config');
+                const config = await response.json();
+                currentConfig = config;
+                
+                document.getElementById('config-username').value = config.username || '';
+                document.getElementById('config-tool-name').value = config.tool_name || '';
+                document.getElementById('config-ssh-key').value = config.ssh_key || '';
+                document.getElementById('config-bastion-host').value = config.bastion_host || 'login.toolforge.org';
+
+                if (config.username && config.tool_name && config.ssh_key) {
+                    testConnectionSilent();
+                } else {
+                    updateConnectionStatus('disconnected', 'Configure credentials');
+                }
+            } catch (err) {
+                console.error("Error fetching config:", err);
+                showToast("Failed to load configuration", false);
+                updateConnectionStatus('disconnected', 'Server unavailable');
+            }
+        }
+
+        // Save config
+        async function saveConfig(event) {
+            event.preventDefault();
+            const username = document.getElementById('config-username').value;
+            const toolName = document.getElementById('config-tool-name').value;
+            const sshKey = document.getElementById('config-ssh-key').value;
+            const bastionHost = document.getElementById('config-bastion-host').value;
+
+            showToast("Saving configuration...", true);
+            try {
+                const response = await fetch('/api/config', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        username: username,
+                        tool_name: toolName,
+                        ssh_key: sshKey,
+                        bastion_host: bastionHost
+                    })
+                });
+                const result = await response.json();
+                hideToast();
+                if (result.success) {
+                    currentConfig = result.config;
+                    showToast("Configuration saved successfully!");
+                    testConnection();
+                } else {
+                    showToast("Failed to save configuration: " + result.message);
+                }
+            } catch (err) {
+                hideToast();
+                showToast("Network error saving configuration");
+            }
+        }
+
+        // Connection status indicator
+        function updateConnectionStatus(status, text) {
+            const dot = document.getElementById('connection-status-dot');
+            const label = document.getElementById('connection-status-text');
+            
+            dot.className = 'status-indicator';
+            dot.classList.add(status);
+            label.textContent = text;
+        }
+
+        // Test connection
+        async function testConnection() {
+            showToast("Testing SSH connection to Toolforge bastion...", true);
+            const btn = document.getElementById('btn-test-conn');
+            btn.disabled = true;
+            updateConnectionStatus('disconnected', 'Testing...');
+            
+            try {
+                const response = await fetch('/api/test-connection', { method: 'POST' });
+                const result = await response.json();
+                hideToast();
+                btn.disabled = false;
+                if (result.success) {
+                    showToast("SSH connection verified successfully!");
+                    updateConnectionStatus('connected', 'Bastion Connected');
+                } else {
+                    showToast("Connection failed: " + result.message, false, 5000);
+                    updateConnectionStatus('disconnected', 'Connection Failed');
+                }
+            } catch (err) {
+                hideToast();
+                btn.disabled = false;
+                showToast("Error connecting to server backend");
+                updateConnectionStatus('disconnected', 'Server Error');
+            }
+        }
+
+        async function testConnectionSilent() {
+            updateConnectionStatus('disconnected', 'Checking...');
+            try {
+                const response = await fetch('/api/test-connection', { method: 'POST' });
+                const result = await response.json();
+                if (result.success) {
+                    updateConnectionStatus('connected', 'Bastion Connected');
+                } else {
+                    updateConnectionStatus('disconnected', 'Connection Offline');
+                }
+            } catch (err) {
+                updateConnectionStatus('disconnected', 'Server Offline');
+            }
+        }
+
+        // Deploy application
+        async function triggerDeployment(event) {
+            event.preventDefault();
+            const url = document.getElementById('deploy-url').value;
+            const entry = document.getElementById('deploy-entry').value;
+            const appVar = document.getElementById('deploy-var').value;
+            const python = document.getElementById('deploy-python').value;
+
+            const btn = document.getElementById('btn-deploy');
+            const consoleEl = document.getElementById('deploy-console');
+            
+            btn.disabled = true;
+            btn.innerHTML = `<div class="spinner"></div> Deploying...`;
+            
+            consoleEl.innerHTML = `<div class="log-entry info">[PIPELINE] Deploy pipeline started at ${new Date().toLocaleTimeString()}</div>`;
+            consoleEl.innerHTML += `<div class="log-entry info">[PIPELINE] URL: ${url}</div>`;
+            
+            showToast("Deploy pipeline running...", true);
+            
+            try {
+                const response = await fetch('/api/deploy', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        url: url,
+                        entry_file: entry,
+                        app_var_name: appVar,
+                        python_version: python
+                    })
+                });
+                
+                const result = await response.json();
+                hideToast();
+                btn.disabled = false;
+                btn.textContent = 'Start Deploy Pipeline';
+                
+                if (result.logs && result.logs.length > 0) {
+                    result.logs.forEach(log => {
+                        let content = log.message;
+                        let categoryClass = log.category || 'info';
+                        
+                        // Parse multiline logs (e.g. from remote bash stdout)
+                        if (content.includes('\n')) {
+                            const lines = content.split('\n');
+                            lines.forEach(line => {
+                                if (line.trim()) {
+                                    const entryDiv = document.createElement('div');
+                                    entryDiv.className = `log-entry ${categoryClass}`;
+                                    entryDiv.textContent = line;
+                                    consoleEl.appendChild(entryDiv);
+                                }
+                            });
+                        } else {
+                            const entryDiv = document.createElement('div');
+                            entryDiv.className = `log-entry ${categoryClass}`;
+                            entryDiv.textContent = content;
+                            consoleEl.appendChild(entryDiv);
+                        }
+                    });
+                }
+                
+                // Scroll to bottom
+                consoleEl.scrollTop = consoleEl.scrollHeight;
+
+                if (result.success) {
+                    showToast("Application deployed successfully!", false, 5000);
+                    // Add success banner in console
+                    const successDiv = document.createElement('div');
+                    successDiv.className = 'log-entry success';
+                    successDiv.innerHTML = `<br>★ SUCCESS: Flask app is running at <a href="${result.url}" target="_blank" style="color: inherit; text-decoration: underline;">${result.url}</a>`;
+                    consoleEl.appendChild(successDiv);
+                    consoleEl.scrollTop = consoleEl.scrollHeight;
+                } else {
+                    showToast("Deployment failed! Check logs.", false, 5000);
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'log-entry error';
+                    errorDiv.textContent = '\n❌ PIPELINE TERMINATED WITH ERRORS';
+                    consoleEl.appendChild(errorDiv);
+                    consoleEl.scrollTop = consoleEl.scrollHeight;
+                }
+            } catch (err) {
+                hideToast();
+                btn.disabled = false;
+                btn.textContent = 'Start Deploy Pipeline';
+                showToast("Network error running deploy pipeline");
+                
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'log-entry error';
+                errorDiv.textContent = '[SYSTEM ERROR] Network communication failure: ' + err.message;
+                consoleEl.appendChild(errorDiv);
+                consoleEl.scrollTop = consoleEl.scrollHeight;
+            }
+        }
+
+        // Webservice control
+        async function checkWebserviceStatus() {
+            const statusBox = document.getElementById('ws-status-box');
+            statusBox.textContent = "Querying Toolforge webservice status via SSH...";
+            try {
+                const response = await fetch('/api/webservice/status');
+                const result = await response.json();
+                statusBox.textContent = result.status || "No output returned.";
+            } catch (err) {
+                statusBox.textContent = "Error querying status: " + err.message;
+            }
+        }
+
+        async function controlWebservice(action) {
+            const type = document.getElementById('ws-start-type').value;
+            showToast(`Sending webservice ${action} command...`, true);
+            
+            try {
+                const response = await fetch('/api/webservice/control', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: action,
+                        type: type
+                    })
+                });
+                const result = await response.json();
+                hideToast();
+                if (result.success) {
+                    showToast(`Webservice ${action} completed successfully!`);
+                    checkWebserviceStatus();
+                } else {
+                    showToast(`Command failed: ${result.error || result.message}`, false, 5000);
+                }
+            } catch (err) {
+                hideToast();
+                showToast("Network error executing control command");
+            }
+        }
+
+        // Kubernetes jobs
+        async function loadJobs() {
+            const loadingText = document.getElementById('jobs-loading-text');
+            const tableContainer = document.getElementById('jobs-table-container');
+            const tbody = document.getElementById('jobs-list-body');
+            const rawOutput = document.getElementById('jobs-raw-output');
+            
+            loadingText.style.display = 'block';
+            tableContainer.style.display = 'none';
+            rawOutput.style.display = 'none';
+            tbody.innerHTML = '';
+            
+            try {
+                const response = await fetch('/api/jobs');
+                const result = await response.json();
+                loadingText.style.display = 'none';
+                
+                if (result.success) {
+                    const jobsText = result.jobs || '';
+                    rawOutput.textContent = jobsText;
+                    
+                    const jobs = parseJobsOutput(jobsText);
+                    
+                    if (jobs.length > 0) {
+                        jobs.forEach(job => {
+                            const tr = document.createElement('tr');
+                            
+                            const nameTd = document.createElement('td');
+                            nameTd.textContent = job.name;
+                            nameTd.style.fontWeight = '600';
+                            nameTd.style.color = 'var(--text-primary)';
+                            
+                            const statusTd = document.createElement('td');
+                            let badgeClass = 'badge-warning';
+                            if (job.status.toLowerCase().includes('run') || job.status.toLowerCase().includes('active') || job.status.toLowerCase().includes('wait') || job.status.toLowerCase().includes('complete')) {
+                                badgeClass = 'badge-success';
+                            } else if (job.status.toLowerCase().includes('fail') || job.status.toLowerCase().includes('err')) {
+                                badgeClass = 'badge-danger';
+                            }
+                            statusTd.innerHTML = `<span class="badge ${badgeClass}">${job.status}</span>`;
+                            
+                            const typeTd = document.createElement('td');
+                            typeTd.textContent = job.type;
+                            
+                            const imageTd = document.createElement('td');
+                            imageTd.textContent = job.image;
+                            
+                            const cmdTd = document.createElement('td');
+                            cmdTd.textContent = job.schedule || job.command || 'N/A';
+                            cmdTd.style.maxWidth = '300px';
+                            cmdTd.style.overflow = 'hidden';
+                            cmdTd.style.textOverflow = 'ellipsis';
+                            
+                            const actionTd = document.createElement('td');
+                            actionTd.style.textAlign = 'right';
+                            actionTd.innerHTML = `
+                                <button onclick="openLogsModal('${job.name}')" class="btn btn-secondary" style="padding: 0.3rem 0.6rem; font-size: 0.75rem; border-radius: var(--radius-sm); margin-right: 0.5rem;">Logs</button>
+                                <button onclick="deleteJob('${job.name}')" class="btn btn-danger" style="padding: 0.3rem 0.6rem; font-size: 0.75rem; border-radius: var(--radius-sm);">Delete</button>
+                            `;
+                            
+                            tr.appendChild(nameTd);
+                            tr.appendChild(statusTd);
+                            tr.appendChild(typeTd);
+                            tr.appendChild(imageTd);
+                            tr.appendChild(cmdTd);
+                            tr.appendChild(actionTd);
+                            tbody.appendChild(tr);
+                        });
+                        tableContainer.style.display = 'block';
+                    } else {
+                        rawOutput.style.display = 'block';
+                        rawOutput.textContent = jobsText || "No jobs found or cluster returned empty response.";
+                    }
+                } else {
+                    rawOutput.style.display = 'block';
+                    rawOutput.textContent = "Error listing jobs: " + result.error;
+                }
+            } catch (err) {
+                loadingText.style.display = 'none';
+                rawOutput.style.display = 'block';
+                rawOutput.textContent = "Network error loading jobs list: " + err.message;
+            }
+        }
+
+        // Helper to parse `toolforge jobs list` stdout
+        function parseJobsOutput(text) {
+            const jobs = [];
+            const lines = text.split('\n');
+            let isTableFormat = false;
+            
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i].trim();
+                if (!line) continue;
+                
+                if (line.toLowerCase().includes('job name') && line.toLowerCase().includes('type')) {
+                    isTableFormat = true;
+                    continue;
+                }
+                
+                if (isTableFormat && line.startsWith('---')) {
+                    continue;
+                }
+                
+                if (isTableFormat) {
+                    const parts = line.split(/\s{2,}/);
+                    if (parts.length >= 4) {
+                        jobs.push({
+                            name: parts[0] || 'N/A',
+                            type: parts[1] || 'N/A',
+                            status: parts[2] || 'N/A',
+                            image: parts[3] || 'N/A',
+                            command: parts[4] || 'N/A',
+                            schedule: parts[1].includes('cron') ? 'Cron Schedule' : ''
+                        });
+                    }
+                }
+            }
+            
+            if (jobs.length === 0) {
+                let currentJob = null;
+                lines.forEach(line => {
+                    const matchName = line.match(/Job name:\s*(\S+)/i);
+                    const matchType = line.match(/Job type:\s*([^\n]+)/i);
+                    const matchStatus = line.match(/Job status:\s*([^\n]+)/i);
+                    const matchImage = line.match(/Job image:\s*([^\n]+)/i);
+                    const matchCmd = line.match(/Job command:\s*([^\n]+)/i);
+                    
+                    if (matchName) {
+                        if (currentJob) jobs.push(currentJob);
+                        currentJob = { name: matchName[1], type: 'N/A', status: 'N/A', image: 'N/A', command: 'N/A' };
+                    }
+                    if (currentJob) {
+                        if (matchType) currentJob.type = matchType[1].trim();
+                        if (matchStatus) currentJob.status = matchStatus[1].trim();
+                        if (matchImage) currentJob.image = matchImage[1].trim();
+                        if (matchCmd) currentJob.command = matchCmd[1].trim();
+                    }
+                });
+                if (currentJob) jobs.push(currentJob);
+            }
+            
+            return jobs;
+        }
+
+        async function submitJob(event) {
+            event.preventDefault();
+            const name = document.getElementById('job-name').value;
+            const command = document.getElementById('job-command').value;
+            const image = document.getElementById('job-image').value;
+            const schedule = document.getElementById('job-schedule').value;
+            
+            showToast(`Submitting job '${name}'...`, true);
+            try {
+                const response = await fetch('/api/jobs', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name: name,
+                        command: command,
+                        image: image,
+                        schedule: schedule
+                    })
+                });
+                const result = await response.json();
+                hideToast();
+                if (result.success) {
+                    showToast("Job submitted successfully!");
+                    document.getElementById('job-name').value = '';
+                    document.getElementById('job-command').value = '';
+                    document.getElementById('job-schedule').value = '';
+                    loadJobs();
+                } else {
+                    showToast("Failed to submit job: " + (result.error || result.message), false, 5000);
+                }
+            } catch (err) {
+                hideToast();
+                showToast("Network error submitting job");
+            }
+        }
+
+        async function deleteJob(jobName) {
+            if (!confirm(`Are you sure you want to delete job '${jobName}'?`)) return;
+            
+            showToast(`Deleting job '${jobName}'...`, true);
+            try {
+                const response = await fetch(`/api/jobs/${jobName}`, { method: 'DELETE' });
+                const result = await response.json();
+                hideToast();
+                if (result.success) {
+                    showToast(`Job '${jobName}' deleted successfully!`);
+                    loadJobs();
+                } else {
+                    showToast("Failed to delete job: " + (result.error || result.message), false, 5000);
+                }
+            } catch (err) {
+                hideToast();
+                showToast("Network error deleting job");
+            }
+        }
+
+        // Job Logs Modal
+        function openLogsModal(jobName) {
+            activeJobName = jobName;
+            document.getElementById('modal-logs-title').textContent = `Logs for job: ${jobName}`;
+            document.getElementById('logs-modal').style.display = 'flex';
+            fetchLogType('out');
+        }
+
+        function closeLogsModal() {
+            document.getElementById('logs-modal').style.display = 'none';
+        }
+
+        async function fetchLogType(logType) {
+            const btnOut = document.getElementById('btn-log-out');
+            const btnErr = document.getElementById('btn-log-err');
+            
+            if (logType === 'out') {
+                btnOut.className = 'btn btn-primary';
+                btnErr.className = 'btn btn-secondary';
+            } else {
+                btnOut.className = 'btn btn-secondary';
+                btnErr.className = 'btn btn-primary';
+            }
+
+            const logsBox = document.getElementById('modal-logs-box');
+            logsBox.textContent = `Fetching .${logType} logs via SSH...`;
+            
+            try {
+                const response = await fetch(`/api/jobs/${activeJobName}/logs/${logType}`);
+                const result = await response.json();
+                logsBox.textContent = result.logs || `No ${logType} logs found.`;
+            } catch (err) {
+                logsBox.textContent = "Error fetching logs: " + err.message;
+            }
+        }
+
+        // Init load
+        window.addEventListener('DOMContentLoaded', () => {
+            fetchConfig();
+            
+            window.addEventListener('click', (event) => {
+                const modal = document.getElementById('logs-modal');
+                if (event.target === modal) {
+                    closeLogsModal();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

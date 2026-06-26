@@ -1,0 +1,15 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+
+# Configuration and Secrets
+.env
+.toolforge_config.json
+
+# IDEs
+.vscode/
+.idea/
