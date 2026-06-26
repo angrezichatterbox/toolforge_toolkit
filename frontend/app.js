@@ -79,20 +79,20 @@
   }
 
   async function pingApi() {
-    setPill("unknown", "LINK…");
+    setPill("unknown", "Connecting…");
     try {
       // /api/config always returns JSON when the backend is up — and unlike "/",
       // it isn't shadowed when the UI is served same-origin.
       const data = await api("/api/config");
       if (data && typeof data === "object" && !("raw" in data)) {
         state.apiOnline = true;
-        setPill("ok", "LINK OK");
+        setPill("ok", "Connected");
         return true;
       }
       throw new Error("unexpected response");
     } catch (_) {
       state.apiOnline = false;
-      setPill("down", "NO LINK");
+      setPill("down", "Offline");
       return false;
     }
   }
@@ -183,10 +183,10 @@
     tool.status = "deploying";
     renderTools();
     clearConsole();
-    $("#console").classList.add("launching");
-    setConsoleTitle(`launch · ${tool.tool}`);
-    appendLog(`$ launch ${tool.repo} → tools.${tool.tool}`, "cmd");
-    appendLog("ignition sequence start…", "warning");
+    $("#console").classList.add("deploying");
+    setConsoleTitle(`deploying · ${tool.tool}`);
+    appendLog(`$ deploy ${tool.repo} → tools.${tool.tool}`, "cmd");
+    appendLog("starting deploy…", "info");
 
     try {
       const data = await api("/api/deploy", {
@@ -217,7 +217,7 @@
     } finally {
       btn.disabled = false;
       btn.innerHTML = prev;
-      $("#console").classList.remove("launching");
+      $("#console").classList.remove("deploying");
       renderTools();
     }
   }
@@ -303,16 +303,13 @@
   function cardHtml(t, i = 0) {
     const isActive = state.activeTool && state.activeTool === t.tool;
     const st = t.status || "unknown";
-    const code = "TF-" + String(t.tool || t.id).slice(0, 6).toUpperCase();
     return `
       <article class="card ${isActive ? "card--active" : ""}" data-id="${t.id}" style="--i:${i}">
-        <span class="card__sheen"></span>
         <div class="card__top">
           <div class="card__title">
-            <span class="card__id">${escapeHtml(code)} · BAY ${String(i + 1).padStart(2, "0")}</span>
             <span class="card__name">
               ${escapeHtml(t.name)}
-              ${t.live ? `<span class="tag" title="Connected to backend">live</span>` : ""}
+              ${t.live ? `<span class="tag tag--accent" title="Connected to backend">live</span>` : ""}
             </span>
             <span class="card__repo">${escapeHtml(t.repo)}</span>
           </div>
@@ -320,8 +317,8 @@
         </div>
         <p class="card__desc">${escapeHtml(t.description || "")}</p>
         <div class="card__meta">
-          <span class="tag tag--lang">${escapeHtml(t.language || "")}</span>
-          <span class="tag tag--lang">tools.${escapeHtml(t.tool)}</span>
+          ${t.language ? `<span class="tag">${escapeHtml(t.language)}</span>` : ""}
+          <span class="tag">tools.${escapeHtml(t.tool)}</span>
           ${isActive ? `<span class="card__active-flag">active</span>` : ""}
         </div>
         <div class="card__footer">
@@ -330,7 +327,7 @@
             ${prettyHost(t.url)}
           </a>
           <div class="card__actions">
-            <button class="btn btn--ghost btn--sm js-manage" data-id="${t.id}">Manage</button>
+            <button class="btn btn--quiet btn--sm js-manage" data-id="${t.id}">Manage</button>
             <button class="btn btn--primary btn--sm js-deploy" data-id="${t.id}">Deploy</button>
           </div>
         </div>
@@ -473,17 +470,6 @@
   }
 
   // ── Mission clock (UTC) ────────────────────────────────
-  function startClock() {
-    const el = $("#missionClock");
-    if (!el) return;
-    const tick = () => {
-      const d = new Date();
-      const p = (n) => String(n).padStart(2, "0");
-      el.textContent = `${p(d.getUTCHours())}:${p(d.getUTCMinutes())}:${p(d.getUTCSeconds())}`;
-    };
-    tick();
-    setInterval(tick, 1000);
-  }
 
   // ── Add payload (paste repo → inspect → save) ──────────
   function openAdd() {
@@ -587,8 +573,12 @@
 
   // ── Theme ──────────────────────────────────────────────
   function initTheme() {
-    // dark-first: mission control lives in the dark. Honor a saved override.
-    document.documentElement.dataset.theme = localStorage.getItem(LS.theme) || "dark";
+    // Codex is light-first; honor a saved override (or system dark preference).
+    const saved = localStorage.getItem(LS.theme);
+    if (saved) document.documentElement.dataset.theme = saved;
+    else if (window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches)
+      document.documentElement.dataset.theme = "dark";
+    else document.documentElement.dataset.theme = "light";
   }
   function toggleTheme() {
     const next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
@@ -675,7 +665,6 @@
   // ── Boot ───────────────────────────────────────────────
   async function init() {
     initTheme();
-    startClock();
     wire();
     renderTools();
     await pingApi();

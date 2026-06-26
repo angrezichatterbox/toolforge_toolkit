@@ -1,31 +1,18 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Deployr · Mission Control</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Sora:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+  <title>Deployr — Toolforge deployment</title>
   <link rel="stylesheet" href="./styles.css" />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛰️</text></svg>" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚀</text></svg>" />
 </head>
 <body>
-  <!-- ───────── Atmosphere layers ───────── -->
-  <div class="space" aria-hidden="true">
-    <div class="space__grid"></div>
-    <div class="space__glow space__glow--1"></div>
-    <div class="space__glow space__glow--2"></div>
-    <div class="space__stars"></div>
-    <div class="space__scan"></div>
-  </div>
-  <div class="grain" aria-hidden="true"></div>
-
-  <!-- ───────── Mission-control header ───────── -->
+  <!-- ───────── Header ───────── -->
   <header class="topbar">
     <div class="brand">
       <span class="brand__mark" aria-hidden="true">
-        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
           <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/>
           <path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/>
           <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/>
@@ -33,56 +20,50 @@
         </svg>
       </span>
       <div class="brand__text">
-        <h1>DEPLOYR</h1>
-        <p>Toolforge Mission Control</p>
-      </div>
-    </div>
-
-    <div class="topbar__center">
-      <div class="clock" title="Coordinated Universal Time">
-        <span class="clock__label">MET · UTC</span>
-        <span class="clock__time" id="missionClock">--:--:--</span>
+        <h1>Deployr</h1>
+        <p>Wikimedia Toolforge deployment</p>
       </div>
     </div>
 
     <div class="topbar__actions">
-      <div id="apiStatus" class="api-pill api-pill--unknown" title="Backend link status">
+      <div id="apiStatus" class="api-pill api-pill--unknown" title="Backend connection status">
         <span class="api-pill__dot"></span>
-        <span class="api-pill__label">LINK…</span>
+        <span class="api-pill__label">Connecting…</span>
       </div>
       <button class="icon-btn" id="themeToggle" title="Toggle theme" aria-label="Toggle theme">
         <svg class="icon-sun" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.2" y1="4.2" x2="5.6" y2="5.6"/><line x1="18.4" y1="18.4" x2="19.8" y2="19.8"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.2" y1="19.8" x2="5.6" y2="18.4"/><line x1="18.4" y1="5.6" x2="19.8" y2="4.2"/></svg>
         <svg class="icon-moon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
       </button>
-      <button class="btn btn--ghost" id="settingsBtn">
+      <button class="btn btn--quiet" id="settingsBtn">
         <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-        Config
+        Settings
       </button>
     </div>
   </header>
 
   <main class="container">
-    <!-- ───────── Telemetry ───────── -->
+    <div class="page-head">
+      <h2 class="page-title">Tools</h2>
+      <p class="page-sub">Deploy and manage your Toolforge web services in one click.</p>
+    </div>
+
+    <!-- ───────── Stats ───────── -->
     <section class="stats">
-      <div class="stat-card" data-tip="Total tools tracked">
-        <span class="stat-card__label">Tools Tracked</span>
+      <div class="stat-card">
         <span class="stat-card__value" id="statTotal" data-count="0">0</span>
-        <span class="stat-card__spark"></span>
+        <span class="stat-card__label">Tools</span>
       </div>
       <div class="stat-card stat-card--running">
-        <span class="stat-card__label">Nominal</span>
         <span class="stat-card__value" id="statRunning" data-count="0">0</span>
-        <span class="stat-card__spark"></span>
+        <span class="stat-card__label">Running</span>
       </div>
       <div class="stat-card stat-card--stopped">
-        <span class="stat-card__label">Standby</span>
         <span class="stat-card__value" id="statStopped" data-count="0">0</span>
-        <span class="stat-card__spark"></span>
+        <span class="stat-card__label">Stopped</span>
       </div>
       <div class="stat-card stat-card--deploying">
-        <span class="stat-card__label">In Transit</span>
         <span class="stat-card__value" id="statDeploying" data-count="0">0</span>
-        <span class="stat-card__spark"></span>
+        <span class="stat-card__label">Deploying</span>
       </div>
     </section>
 
@@ -90,32 +71,32 @@
     <section class="toolbar">
       <div class="search">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input type="search" id="searchInput" placeholder="Search payloads or repositories…" autocomplete="off" />
+        <input type="search" id="searchInput" placeholder="Search tools or repositories…" autocomplete="off" />
       </div>
       <div class="filters" id="filters" role="tablist">
         <button class="chip chip--active" data-filter="all">All</button>
-        <button class="chip" data-filter="running">Nominal</button>
-        <button class="chip" data-filter="stopped">Standby</button>
-        <button class="chip" data-filter="deploying">In Transit</button>
+        <button class="chip" data-filter="running">Running</button>
+        <button class="chip" data-filter="stopped">Stopped</button>
+        <button class="chip" data-filter="deploying">Deploying</button>
       </div>
       <button class="btn btn--primary" id="addBtn">
-        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        Add payload
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Add tool
       </button>
     </section>
 
-    <!-- ───────── Launch bays ───────── -->
+    <!-- ───────── Tool grid ───────── -->
     <section class="grid" id="toolGrid" aria-live="polite"></section>
-    <p class="empty" id="emptyState" hidden>No payloads match your query.</p>
+    <p class="empty" id="emptyState" hidden>No tools match your search.</p>
   </main>
 
-  <!-- ───────── Slide-over drawer ───────── -->
+  <!-- ───────── Drawer ───────── -->
   <div class="overlay" id="overlay" hidden></div>
 
   <aside class="drawer" id="drawer" aria-hidden="true">
     <header class="drawer__head">
       <div>
-        <h2 id="drawerTitle">Payload</h2>
+        <h2 id="drawerTitle">Tool</h2>
         <p id="drawerSub" class="drawer__sub"></p>
       </div>
       <button class="icon-btn" id="drawerClose" aria-label="Close">
@@ -124,8 +105,8 @@
     </header>
 
     <nav class="drawer__tabs">
-      <button class="drawer__tab drawer__tab--active" data-tab="deploy">Launch &amp; Telemetry</button>
-      <button class="drawer__tab" data-tab="config">Flight Plan</button>
+      <button class="drawer__tab drawer__tab--active" data-tab="deploy">Deploy &amp; logs</button>
+      <button class="drawer__tab" data-tab="config">Configuration</button>
     </nav>
 
     <!-- Deploy tab -->
@@ -133,21 +114,20 @@
       <div class="drawer__row">
         <button class="btn btn--primary" id="deployBtn">
           <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
-          Launch deploy
+          Deploy
         </button>
-        <button class="btn btn--soft" data-control="restart">Restart</button>
-        <button class="btn btn--soft" data-control="start">Start</button>
-        <button class="btn btn--soft btn--danger" data-control="stop">Abort</button>
-        <button class="btn btn--ghost btn--sm" id="refreshStatusBtn" title="Ping live status">Ping</button>
+        <button class="btn" data-control="restart">Restart</button>
+        <button class="btn" data-control="start">Start</button>
+        <button class="btn btn--destructive" data-control="stop">Stop</button>
+        <button class="btn btn--quiet" id="refreshStatusBtn" title="Refresh live status">Refresh</button>
       </div>
       <div class="console" id="console">
         <div class="console__head">
-          <span class="console__dots"><i></i><i></i><i></i></span>
-          <span class="console__title" id="consoleTitle">telemetry feed</span>
-          <button class="console__clear" id="consoleClear">clear</button>
+          <span class="console__title" id="consoleTitle">deploy log</span>
+          <button class="console__clear" id="consoleClear">Clear</button>
         </div>
-        <div class="console__launchbar" aria-hidden="true"><span></span></div>
-        <pre class="console__body" id="consoleBody"><span class="console__empty">▌ Awaiting command. Launch logs and webservice telemetry stream here.</span></pre>
+        <div class="console__progress" aria-hidden="true"><span></span></div>
+        <pre class="console__body" id="consoleBody"><span class="console__empty">Waiting for an action — deploy logs and webservice output appear here.</span></pre>
       </div>
     </div>
 
@@ -155,26 +135,26 @@
     <div class="drawer__panel" data-panel="config" hidden>
       <form id="configForm" class="form">
         <label class="field">
-          <span>Tool account <small>tools.&lt;name&gt;</small></span>
+          <span class="field__label">Tool account <small>tools.&lt;name&gt;</small></span>
           <input name="tool" type="text" placeholder="picstalker" />
         </label>
         <label class="field">
-          <span>Source URL <small>git repo or zip/tar archive</small></span>
+          <span class="field__label">Source URL <small>git repo or zip/tar archive</small></span>
           <input name="git_url" type="url" placeholder="https://github.com/org/repo.git" />
         </label>
         <div class="field-row">
           <label class="field">
-            <span>Entry file</span>
+            <span class="field__label">Entry file</span>
             <input name="entry_file" type="text" placeholder="app.py" />
           </label>
           <label class="field">
-            <span>App variable</span>
+            <span class="field__label">App variable</span>
             <input name="app_var_name" type="text" placeholder="app" />
           </label>
         </div>
         <div class="field-row">
           <label class="field">
-            <span>Python image</span>
+            <span class="field__label">Python image</span>
             <select name="python_version">
               <option value="python3.11">python3.11</option>
               <option value="python3.9">python3.9</option>
@@ -182,80 +162,80 @@
             </select>
           </label>
           <label class="field">
-            <span>Branch <small>info</small></span>
+            <span class="field__label">Branch <small>info</small></span>
             <input name="branch" type="text" placeholder="main" />
           </label>
         </div>
         <div class="form__actions">
-          <button type="button" class="btn btn--danger" id="removeBtn" title="Remove from catalogue" style="margin-right:auto">Remove</button>
-          <button type="button" class="btn btn--soft" id="setActiveBtn">Set primary target</button>
-          <button type="submit" class="btn btn--primary">Save flight plan</button>
+          <button type="button" class="btn btn--destructive btn--quiet" id="removeBtn" title="Remove from catalogue" style="margin-right:auto">Remove</button>
+          <button type="button" class="btn" id="setActiveBtn">Set as active</button>
+          <button type="submit" class="btn btn--primary">Save</button>
         </div>
       </form>
     </div>
   </aside>
 
-  <!-- ───────── Config modal ───────── -->
+  <!-- ───────── Settings dialog ───────── -->
   <div class="overlay" id="settingsOverlay" hidden></div>
   <div class="modal" id="settingsModal" role="dialog" aria-modal="true" hidden>
     <header class="modal__head">
-      <h2>Ground Station Link</h2>
+      <h2>Connection settings</h2>
       <button class="icon-btn" id="settingsClose" aria-label="Close">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
     </header>
     <div class="modal__body">
       <label class="field">
-        <span>Backend API base URL <small>frontend only</small></span>
+        <span class="field__label">Backend API base URL <small>frontend only</small></span>
         <input id="apiBaseInput" type="text" placeholder="http://localhost:8765" />
         <small class="hint">Where the Toolforge Manager API runs. Blank = same origin.</small>
       </label>
       <label class="field">
-        <span>Wikimedia username</span>
+        <span class="field__label">Wikimedia username</span>
         <input id="cfgUsername" type="text" placeholder="your-shell-username" />
       </label>
       <label class="field">
-        <span>SSH private key path</span>
+        <span class="field__label">SSH private key path</span>
         <input id="cfgSshKey" type="text" placeholder="~/.ssh/id_rsa" />
       </label>
       <label class="field">
-        <span>Bastion host</span>
+        <span class="field__label">Bastion host</span>
         <input id="cfgBastion" type="text" placeholder="login.toolforge.org" />
       </label>
       <div class="form__actions">
-        <button class="btn btn--ghost" id="testConnBtn">Test link</button>
+        <button class="btn" id="testConnBtn">Test connection</button>
         <button class="btn btn--primary" id="saveSettingsBtn">Save</button>
       </div>
     </div>
   </div>
 
-  <!-- ───────── Add-payload modal ───────── -->
+  <!-- ───────── Add-tool dialog ───────── -->
   <div class="overlay" id="addOverlay" hidden></div>
-  <div class="modal modal--wide" id="addModal" role="dialog" aria-modal="true" hidden>
+  <div class="modal" id="addModal" role="dialog" aria-modal="true" hidden>
     <header class="modal__head">
-      <h2>New Payload</h2>
+      <h2>Add a tool</h2>
       <button class="icon-btn" id="addClose" aria-label="Close">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
     </header>
     <div class="modal__body">
       <label class="field">
-        <span>Repository URL <small>git repo or zip/tar archive</small></span>
+        <span class="field__label">Repository URL <small>git repo or zip/tar archive</small></span>
         <div class="inline">
           <input id="addUrl" type="url" placeholder="https://github.com/org/repo.git" autocomplete="off" />
-          <button class="btn btn--soft" id="inspectBtn">Inspect</button>
+          <button class="btn" id="inspectBtn">Inspect</button>
         </div>
-        <small class="hint">Deployr parses the URL and pulls repo metadata (description, language, default branch).</small>
+        <small class="hint">Deployr reads the repository metadata (description, language, default branch).</small>
       </label>
 
       <div id="addDetails" hidden>
         <div class="field-row">
-          <label class="field"><span>Name</span><input id="addName" type="text" /></label>
-          <label class="field"><span>Tool account <small>tools.&lt;name&gt;</small></span><input id="addTool" type="text" /></label>
+          <label class="field"><span class="field__label">Name</span><input id="addName" type="text" /></label>
+          <label class="field"><span class="field__label">Tool account <small>tools.&lt;name&gt;</small></span><input id="addTool" type="text" /></label>
         </div>
         <div class="field-row">
-          <label class="field"><span>Default branch</span><input id="addBranch" type="text" /></label>
-          <label class="field"><span>Python image</span>
+          <label class="field"><span class="field__label">Default branch</span><input id="addBranch" type="text" /></label>
+          <label class="field"><span class="field__label">Python image</span>
             <select id="addPy">
               <option value="python3.11">python3.11</option>
               <option value="python3.9">python3.9</option>
@@ -264,16 +244,16 @@
           </label>
         </div>
         <div class="field-row">
-          <label class="field"><span>Entry file</span><input id="addEntry" type="text" placeholder="app.py" /></label>
-          <label class="field"><span>App variable</span><input id="addAppVar" type="text" placeholder="app" /></label>
+          <label class="field"><span class="field__label">Entry file</span><input id="addEntry" type="text" placeholder="app.py" /></label>
+          <label class="field"><span class="field__label">App variable</span><input id="addAppVar" type="text" placeholder="app" /></label>
         </div>
-        <label class="field"><span>Language</span><input id="addLang" type="text" placeholder="Python · Flask" /></label>
-        <label class="field"><span>Description</span><input id="addDesc" type="text" /></label>
+        <label class="field"><span class="field__label">Language</span><input id="addLang" type="text" placeholder="Python" /></label>
+        <label class="field"><span class="field__label">Description</span><input id="addDesc" type="text" /></label>
       </div>
 
       <div class="form__actions">
-        <button class="btn btn--ghost" id="addCancel">Cancel</button>
-        <button class="btn btn--primary" id="addSave" disabled>Add to catalogue</button>
+        <button class="btn btn--quiet" id="addCancel">Cancel</button>
+        <button class="btn btn--primary" id="addSave" disabled>Add tool</button>
       </div>
     </div>
   </div>
