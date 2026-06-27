@@ -6,7 +6,12 @@ Main entry point for the Flask-based backend server.
 
 import os
 
+from dotenv import load_dotenv
 from flask import Flask, jsonify
+
+# Load environment variables from .env (SSH key path, bastion host, DB creds).
+load_dotenv()
+
 from routes.config import config_bp
 from routes.webservice import webservice_bp
 from routes.deploy import deploy_bp
@@ -38,10 +43,9 @@ def api_info():
             {"path": "/api/tools", "methods": ["GET", "POST"]},
             {"path": "/api/tools/inspect", "methods": ["POST"]},
             {"path": "/api/tools/<id>", "methods": ["DELETE"]},
-            {"path": "/api/config", "methods": ["GET", "POST"]},
             {"path": "/api/test-connection", "methods": ["POST"]},
             {"path": "/api/deploy", "methods": ["POST"]},
-            {"path": "/api/webservice/status", "methods": ["GET"]},
+            {"path": "/api/webservice/status", "methods": ["POST"]},
             {"path": "/api/webservice/control", "methods": ["POST"]}
         ]
     })

@@ -4,6 +4,19 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Deployr — Toolforge deployment</title>
+
+  <!--
+    Toolforge external-asset policy — keep this tool privacy-preserving.
+    https://wikitech.wikimedia.org/wiki/Help:Toolforge/Web#Load_external_assets_using_our_CDN_services
+    Do NOT embed assets from non-Wikimedia servers. If you ever need a library,
+    font, or image, load it through Toolforge's anonymizing reverse proxies:
+      Libraries (cdnjs):   https://tools-static.wmflabs.org/cdnjs/ajax/libs/<lib>/<ver>/<file>
+      Fonts (Google Fonts): https://tools-static.wmflabs.org/fontcdn/css?family=<Family>
+      Maps:                 https://maps.wikimedia.org/
+    The CSP below enforces this: only same-origin and the proxy domains are allowed.
+  -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://tools-static.wmflabs.org; style-src 'self' https://tools-static.wmflabs.org; font-src 'self' https://tools-static.wmflabs.org; img-src 'self' data: https://tools-static.wmflabs.org https://upload.wikimedia.org https://maps.wikimedia.org; base-uri 'self'" />
+
   <link rel="stylesheet" href="./styles.css" />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚀</text></svg>" />
 </head>
@@ -167,7 +180,7 @@
           </label>
         </div>
         <div class="form__actions">
-          <button type="button" class="btn btn--destructive btn--quiet" id="removeBtn" title="Remove from catalogue" style="margin-right:auto">Remove</button>
+          <button type="button" class="btn btn--destructive btn--quiet u-push-right" id="removeBtn" title="Remove from catalogue">Remove</button>
           <button type="button" class="btn" id="setActiveBtn">Set as active</button>
           <button type="submit" class="btn btn--primary">Save</button>
         </div>
