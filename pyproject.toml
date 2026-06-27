@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "deployr"
+version = "1.1.0"
+description = "Interactive and scriptable CLI for managing Wikimedia Toolforge tools, webservices, and Kubernetes jobs."
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Harikrishna T P", email = "tpharikrishna5@gmail.com" }]
+keywords = ["wikimedia", "toolforge", "cli", "deployment", "kubernetes", "ssh"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Build Tools",
+    "Topic :: System :: Systems Administration",
+]
+requires-python = ">=3.9"
+dependencies = [
+    "click>=8.1.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/angrezichatterbox/toolforge_toolkit"
+Repository = "https://github.com/angrezichatterbox/toolforge_toolkit"
+Issues = "https://github.com/angrezichatterbox/toolforge_toolkit/issues"
+
+[project.scripts]
+deployr = "deployr.cli:cli"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["deployr*"]

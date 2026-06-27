@@ -1,3 +1,30 @@
+Metadata-Version: 2.4
+Name: deployr
+Version: 1.1.0
+Summary: Interactive and scriptable CLI for managing Wikimedia Toolforge tools, webservices, and Kubernetes jobs.
+Author-email: Harikrishna T P <tpharikrishna5@gmail.com>
+License-Expression: MIT
+Project-URL: Homepage, https://github.com/angrezichatterbox/toolforge_toolkit
+Project-URL: Repository, https://github.com/angrezichatterbox/toolforge_toolkit
+Project-URL: Issues, https://github.com/angrezichatterbox/toolforge_toolkit/issues
+Keywords: wikimedia,toolforge,cli,deployment,kubernetes,ssh
+Classifier: Development Status :: 4 - Beta
+Classifier: Environment :: Console
+Classifier: Intended Audience :: Developers
+Classifier: Operating System :: POSIX :: Linux
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Topic :: Software Development :: Build Tools
+Classifier: Topic :: System :: Systems Administration
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: click>=8.1.0
+Dynamic: license-file
+
 # Deployr
 
 > **Deployr** is an interactive and scriptable CLI for managing [Wikimedia Toolforge](https://wikitech.wikimedia.org/wiki/Portal:Toolforge) tools.
