@@ -350,6 +350,9 @@ input, select, button { font-family: inherit; font-size: 0.875rem; }
   .card, #addDetails, .toast, .modal { animation: none; }
 }
 
+/* ───────── Utilities ───────── */
+.u-push-right { margin-right: auto; }
+
 /* ───────── Responsive ───────── */
 @media (max-width: 720px) {
   .stats { grid-template-columns: repeat(2, 1fr); }
