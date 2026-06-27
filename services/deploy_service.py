@@ -7,7 +7,7 @@ from .ssh_service import run_ssh_command_capture, upload_to_bastion
 from .download_service import download_source_files
 from github_pr_creator import create_github_action_pr
 
-def deploy_from_url(config, params):
+def deploy_from_url(url, username, tool_name, ssh_key, entry_file="app.py", app_var_name="app", python_version="python3.11", app_type=None, bastion_host="login.toolforge.org"):
     """Downloads source code, SCPs to bastion, and initiates webservice restart."""
     logs = []
     
@@ -15,6 +15,14 @@ def deploy_from_url(config, params):
         logs.append({"message": msg, "category": category})
         print(f"[{category.upper()}] {msg}")
     
+    # Create configuration dict for SSH operations
+    config = {
+        "username": username,
+        "tool_name": tool_name,
+        "ssh_key": ssh_key,
+        "bastion_host": bastion_host
+    }
+
     # 1. Read SSH keys from local device
     log("Reading private SSH key from local device...")
     try:
@@ -25,20 +33,19 @@ def deploy_from_url(config, params):
         return {"success": False, "logs": logs}
         
     # 2. SSH to toolforge (connection check)
-    log(f"Connecting to Toolforge bastion ({config['bastion_host']}) via SSH...")
+    log(f"Connecting to Toolforge bastion ({bastion_host}) via SSH...")
     stdout, stderr, code = run_ssh_command_capture(config, "echo 'ready'")
     if code != 0:
         log(f"SSH bastion connection failed (code {code}): {stderr or stdout}", "error")
         return {"success": False, "logs": logs}
     log("Bastion SSH connection verified successfully.")
     
-    # 3. Take the URL from request body, copy/download files locally
-    url = params.get("url")
+    # 3. Take the URL, copy/download files locally
     if not url:
-        log("Deployment failed: No 'url' provided in request body.", "error")
+        log("Deployment failed: No 'url' provided.", "error")
         return {"success": False, "logs": logs}
         
-    log(f"Taking URL from request body: {url}. Extracting files...")
+    log(f"Taking URL: {url}. Extracting files...")
     local_temp_dir = tempfile.mkdtemp()
     try:
         archive_type = download_source_files(url, local_temp_dir)
@@ -50,10 +57,12 @@ def deploy_from_url(config, params):
         return {"success": False, "logs": logs}
         
     # 4. Process files and compile deployment scripts
-    entry_file = params.get("entry_file", "app.py")
-    app_var_name = params.get("app_var_name", "app")
-    python_version = params.get("python_version", "python3.11")
-    tool_name = config["tool_name"]
+    if not entry_file:
+        entry_file = "app.py"
+    if not app_var_name:
+        app_var_name = "app"
+    if not python_version:
+        python_version = "python3.11"
     
     log("Preparing deployment scripts...")
     local_entry_path = os.path.join(local_temp_dir, entry_file)
@@ -173,7 +182,6 @@ toolforge webservice {python_version} restart || toolforge webservice {python_ve
         log("Remote staging cleaned.")
         
         # 10. Optionally raise GitHub Pull Request with CD workflow
-        app_type = params.get("app_type")
         if app_type:
             log(f"Triggering PR generation for continuous deployment workflow of type '{app_type}'...")
             try:
