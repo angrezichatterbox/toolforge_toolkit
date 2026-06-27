@@ -6,16 +6,7 @@ from flask import Blueprint, request, jsonify
 import db
 
 tools_bp = Blueprint("tools", __name__)
-
-# Initialise the local catalogue DB once, at import. Degrade gracefully if the
-# database is unavailable so the rest of the API keeps working.
-try:
-    db.init_db()
-    DB_OK = True
-    print(f"[deployr] DB connected: {db.DB_CONF['host']}:{db.DB_CONF['port']}/{db.DB_NAME}")
-except Exception as _db_err:  # pragma: no cover
-    DB_OK = False
-    print(f"[deployr] DB unavailable ({_db_err}); /api/tools will return empty.")
+DB_OK = True  # overridden to False only if init_db() fails at server startup
 
 
 def _enrich_from_github(owner, repo):
