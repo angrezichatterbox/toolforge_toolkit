@@ -1,0 +1,75 @@
+#!/usr/bin/env node
+"use strict";
+
+/**
+ * deployr — npm entry point
+ * Locates python3, installs click if needed, and runs deployr/cli.py
+ * bundled alongside this package.
+ */
+
+const { execFileSync, spawnSync } = require("child_process");
+const path = require("path");
+const fs = require("fs");
+
+// ── Find python3 ──────────────────────────────────────────────────────────────
+function findPython() {
+  for (const candidate of ["python3", "python"]) {
+    try {
+      const result = execFileSync(candidate, ["--version"], {
+        encoding: "utf8",
+        stdio: ["ignore", "pipe", "pipe"],
+      });
+      // Must be Python 3.x
+      const version = result.trim();
+      if (version.startsWith("Python 3")) {
+        return candidate;
+      }
+    } catch (_) {}
+  }
+  return null;
+}
+
+// ── Ensure click is installed ─────────────────────────────────────────────────
+function ensureClick(python) {
+  try {
+    execFileSync(python, ["-c", "import click"], { stdio: "ignore" });
+  } catch (_) {
+    console.log("[deployr] Installing required dependency: click...");
+    const result = spawnSync(
+      python,
+      ["-m", "pip", "install", "click>=8.1.0", "--quiet"],
+      { stdio: "inherit" }
+    );
+    if (result.status !== 0) {
+      console.error(
+        "[deployr] Failed to install click. Please run: pip install click"
+      );
+      process.exit(1);
+    }
+  }
+}
+
+// ── Main ──────────────────────────────────────────────────────────────────────
+const python = findPython();
+if (!python) {
+  console.error(
+    "\n[deployr] Error: Python 3 is required but was not found on your PATH.\n" +
+      "  Install Python 3.9+ from https://python.org and try again.\n"
+  );
+  process.exit(1);
+}
+
+ensureClick(python);
+
+// Resolve the bundled CLI script relative to this file
+const cliScript = path.join(__dirname, "..", "deployr", "cli.py");
+
+if (!fs.existsSync(cliScript)) {
+  console.error("[deployr] Error: bundled cli.py not found at " + cliScript);
+  process.exit(1);
+}
+
+// Pass all CLI arguments through to the Python script
+const args = [cliScript, ...process.argv.slice(2)];
+const result = spawnSync(python, args, { stdio: "inherit" });
+process.exit(result.status ?? 1);
