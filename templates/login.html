@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deployr — Sign in with Wikimedia</title>
+    <meta name="description" content="Sign in with your Wikimedia account to access the Deployr Toolforge Dashboard. Manage deployments, webservices, and jobs on Wikimedia Toolforge.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0b0f19;
+            --bg-secondary: #131a2b;
+            --card-bg: rgba(26, 36, 57, 0.55);
+            --card-border: rgba(255, 255, 255, 0.06);
+            --card-hover-border: rgba(6, 182, 212, 0.3);
+
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+
+            --accent-cyan: #06b6d4;
+            --accent-blue: #3b82f6;
+            --accent-gradient: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
+
+            --color-success: #10b981;
+            --color-warning: #f59e0b;
+            --color-danger: #ef4444;
+
+            --font-main: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            --radius-lg: 16px;
+            --radius-md: 12px;
+            --radius-sm: 8px;
+            --transition-all: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: var(--font-main);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* ─── Ambient Glow Orbs ─── */
+        .ambient-glow {
+            position: absolute;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+            filter: blur(80px);
+        }
+
+        .glow-1 {
+            width: 600px;
+            height: 600px;
+            left: -180px;
+            top: -180px;
+            background: radial-gradient(circle, rgba(6, 182, 212, 0.12) 0%, transparent 70%);
+            animation: drift 12s ease-in-out infinite alternate;
+        }
+
+        .glow-2 {
+            width: 500px;
+            height: 500px;
+            right: -120px;
+            bottom: -120px;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 70%);
+            animation: drift 14s ease-in-out infinite alternate-reverse;
+        }
+
+        .glow-3 {
+            width: 350px;
+            height: 350px;
+            right: 20%;
+            top: -60px;
+            background: radial-gradient(circle, rgba(6, 182, 212, 0.06) 0%, transparent 70%);
+            animation: drift 10s ease-in-out 2s infinite alternate;
+        }
+
+        @keyframes drift {
+            0%   { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(30px, 20px) scale(1.08); }
+        }
+
+        /* ─── Grid Pattern Overlay ─── */
+        .grid-overlay {
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+            background-size: 60px 60px;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* ─── Login Container ─── */
+        .login-container {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 480px;
+            padding: 0 1.5rem;
+            animation: fadeUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+            opacity: 0;
+        }
+
+        @keyframes fadeUp {
+            0%   { opacity: 0; transform: translateY(24px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ─── Logo + Brand Header ─── */
+        .brand-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .logo-mark {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 56px;
+            height: 56px;
+            background: var(--accent-gradient);
+            border-radius: var(--radius-md);
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 1.25rem;
+            box-shadow:
+                0 0 40px rgba(6, 182, 212, 0.35),
+                0 8px 32px rgba(0, 0, 0, 0.3);
+            animation: pulseLogo 3s ease-in-out infinite;
+        }
+
+        @keyframes pulseLogo {
+            0%, 100% { box-shadow: 0 0 40px rgba(6, 182, 212, 0.35), 0 8px 32px rgba(0,0,0,0.3); }
+            50%      { box-shadow: 0 0 60px rgba(6, 182, 212, 0.5), 0 8px 32px rgba(0,0,0,0.3); }
+        }
+
+        .brand-name {
+            font-size: 2.25rem;
+            font-weight: 800;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.5px;
+            margin-bottom: 0.25rem;
+        }
+
+        .brand-tagline {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            font-weight: 400;
+        }
+
+        /* ─── Card ─── */
+        .login-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-lg);
+            padding: 2.5rem 2.25rem;
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            box-shadow:
+                0 4px 60px rgba(0, 0, 0, 0.35),
+                inset 0 1px 0 rgba(255, 255, 255, 0.04);
+            transition: var(--transition-all);
+        }
+
+        .login-card:hover {
+            border-color: var(--card-hover-border);
+        }
+
+        .card-heading {
+            font-size: 1.35rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+
+        .card-description {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            line-height: 1.55;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        /* ─── Divider ─── */
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--card-border);
+        }
+
+        .divider span {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+
+        /* ─── OAuth Sign-In Button ─── */
+        .oauth-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.85rem;
+            width: 100%;
+            padding: 0.95rem 1.5rem;
+            border: none;
+            border-radius: var(--radius-md);
+            background: var(--accent-gradient);
+            color: #fff;
+            font-family: var(--font-main);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition-all);
+            text-decoration: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .oauth-btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 50%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .oauth-btn:hover {
+            transform: translateY(-2px);
+            box-shadow:
+                0 8px 32px rgba(6, 182, 212, 0.35),
+                0 0 0 1px rgba(6, 182, 212, 0.3);
+        }
+
+        .oauth-btn:hover::before {
+            opacity: 1;
+        }
+
+        .oauth-btn:active {
+            transform: translateY(0);
+        }
+
+        .oauth-btn svg {
+            width: 22px;
+            height: 22px;
+            flex-shrink: 0;
+        }
+
+        /* ─── Feature Chips ─── */
+        .features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            justify-content: center;
+        }
+
+        .feature-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.35rem 0.75rem;
+            border-radius: 9999px;
+            background-color: rgba(6, 182, 212, 0.08);
+            border: 1px solid rgba(6, 182, 212, 0.15);
+            font-size: 0.72rem;
+            font-weight: 500;
+            color: var(--accent-cyan);
+            letter-spacing: 0.2px;
+        }
+
+        .feature-chip svg {
+            width: 12px;
+            height: 12px;
+            stroke: currentColor;
+            stroke-width: 2.5;
+            fill: none;
+        }
+
+        /* ─── Footer ─── */
+        .login-footer {
+            text-align: center;
+            margin-top: 2rem;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        .login-footer a {
+            color: var(--accent-cyan);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .login-footer a:hover {
+            color: var(--text-primary);
+        }
+
+        /* ─── Security Note ─── */
+        .security-note {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.75rem 1rem;
+            margin-top: 1.25rem;
+            border-radius: var(--radius-sm);
+            background-color: rgba(16, 185, 129, 0.06);
+            border: 1px solid rgba(16, 185, 129, 0.12);
+            font-size: 0.75rem;
+            color: var(--color-success);
+        }
+
+        .security-note svg {
+            width: 16px;
+            height: 16px;
+            flex-shrink: 0;
+            stroke: currentColor;
+            stroke-width: 2;
+            fill: none;
+        }
+
+        /* ─── Error Banner ─── */
+        .error-banner {
+            display: none;
+            align-items: center;
+            gap: 0.65rem;
+            padding: 0.8rem 1rem;
+            margin-bottom: 1.25rem;
+            border-radius: var(--radius-sm);
+            background-color: rgba(239, 68, 68, 0.08);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            font-size: 0.8rem;
+            color: #fca5a5;
+            animation: fadeUp 0.4s ease;
+        }
+
+        .error-banner.visible {
+            display: flex;
+        }
+
+        .error-banner svg {
+            width: 16px;
+            height: 16px;
+            flex-shrink: 0;
+            stroke: currentColor;
+            stroke-width: 2;
+            fill: none;
+        }
+
+        /* ─── Responsive ─── */
+        @media (max-width: 540px) {
+            .login-card {
+                padding: 2rem 1.5rem;
+            }
+            .brand-name {
+                font-size: 1.75rem;
+            }
+            .card-heading {
+                font-size: 1.15rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Ambient Glow Orbs -->
+    <div class="ambient-glow glow-1"></div>
+    <div class="ambient-glow glow-2"></div>
+    <div class="ambient-glow glow-3"></div>
+    <div class="grid-overlay"></div>
+
+    <div class="login-container">
+        <!-- Brand -->
+        <div class="brand-header">
+            <div class="logo-mark">D</div>
+            <h1 class="brand-name">Deployr</h1>
+            <p class="brand-tagline">Wikimedia Toolforge Deployment Suite</p>
+        </div>
+
+        <!-- Login Card -->
+        <div class="login-card">
+            <h2 class="card-heading">Welcome back</h2>
+            <p class="card-description">
+                Sign in with your Wikimedia account to manage deployments,
+                webservices, and jobs on Toolforge.
+            </p>
+
+            <!-- Error Banner (shown when ?error= present) -->
+            <div class="error-banner" id="error-banner">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                <span id="error-message"></span>
+            </div>
+
+            <!-- Wikimedia OAuth Button -->
+            <a href="/oauth/authorize" class="oauth-btn" id="btn-sign-in">
+                <!-- Wikimedia "W" logo -->
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="12" r="11" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                    <path d="M6.5 8L9 16L12 10L15 16L17.5 8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                </svg>
+                Sign in with Wikimedia
+            </a>
+
+            <!-- Security Note -->
+            <div class="security-note">
+                <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                <span>Secure OAuth 2.0 with PKCE — your credentials never touch this server.</span>
+            </div>
+
+            <div class="divider"><span>What you can do</span></div>
+
+            <!-- Feature Chips -->
+            <div class="features">
+                <div class="feature-chip">
+                    <svg viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+                    Deploy Apps
+                </div>
+                <div class="feature-chip">
+                    <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/></svg>
+                    Manage Services
+                </div>
+                <div class="feature-chip">
+                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    Schedule Jobs
+                </div>
+                <div class="feature-chip">
+                    <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+                    View Logs
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="login-footer">
+            Powered by <a href="https://wikitech.wikimedia.org/wiki/Portal:Toolforge" target="_blank" rel="noopener">Wikimedia Toolforge</a><br>
+            <a href="https://meta.wikimedia.org/wiki/Special:OAuthConsumerRegistration" target="_blank" rel="noopener">OAuth Consumer Docs</a>
+        </div>
+    </div>
+
+    <script>
+        // Map error codes from /callback to human-readable messages
+        const ERROR_MESSAGES = {
+            session_expired:       "Your login session expired. Please try signing in again.",
+            access_denied:         "You declined access. Sign in again when you're ready.",
+            no_code:               "No authorization code was received from Wikimedia.",
+            token_exchange_failed: "Could not exchange the authorization code for a token. Please try again.",
+            profile_fetch_failed:  "Signed in, but couldn't fetch your Wikimedia profile. Please try again.",
+            invalid_profile:       "Your Wikimedia profile returned incomplete data. Please try again.",
+            jwt_mint_failed:       "Internal error creating your session token. Please try again.",
+        };
+
+        (function showErrorIfPresent() {
+            const params = new URLSearchParams(window.location.search);
+            const code   = params.get("error");
+            if (!code) return;
+
+            const msg    = ERROR_MESSAGES[code] || `Authentication error: ${code}`;
+            const banner = document.getElementById("error-banner");
+            document.getElementById("error-message").textContent = msg;
+            banner.classList.add("visible");
+
+            // Remove the ?error= from the URL bar without triggering a reload
+            history.replaceState(null, "", window.location.pathname);
+        })();
+    </script>
+</body>
+</html>
