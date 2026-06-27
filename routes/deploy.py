@@ -18,6 +18,9 @@ def deploy_endpoint():
     if missing:
         return jsonify({"success": False, "message": f"Missing required fields: {', '.join(missing)}"}), 400
 
+    # Extract env vars here to pass them separately
+    env_vars = data.get("env_vars", {})
+
     # Execute pipeline
-    result = deploy_from_url(config, data)
+    result = deploy_from_url(config, data, env_vars)
     return jsonify(result)

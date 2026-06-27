@@ -7,7 +7,7 @@ from .ssh_service import run_ssh_command_capture, upload_to_bastion
 from .download_service import download_source_files
 from github_pr_creator import create_github_action_pr
 
-def deploy_from_url(config, params):
+def deploy_from_url(config, params, env_vars=None):
     """Downloads source code, SCPs to bastion, and initiates webservice restart."""
     logs = []
     
@@ -86,6 +86,18 @@ except Exception as e:
         with open(os.path.join(local_temp_dir, "app.py"), "w", encoding="utf-8") as f:
             f.write(app_wrapper_content)
             
+    # Prepare custom env vars block for deploy.sh
+    if env_vars is None:
+        env_vars = {}
+    env_vars_script = ""
+    if env_vars:
+        env_vars_script += f"\n# --- Custom Environment Variables ---\n"
+        env_vars_script += f"echo \"Writing custom environment variables to .env...\"\n"
+        env_vars_script += f"ENVFILE=\"/data/project/{tool_name}/www/python/src/.env\"\n"
+        for key, val in env_vars.items():
+            safe_val = str(val).replace("\"", "\\\"").replace("$", "\\$")
+            env_vars_script += f"echo \"{key}={safe_val}\" >> \"$ENVFILE\"\n"
+            
     # Generate remote deploy.sh script
     deploy_id = str(uuid.uuid4())[:8]
     remote_temp = f"/tmp/tf_deploy_{tool_name}_{deploy_id}"
@@ -133,6 +145,7 @@ if [ -f "$REPLICA" ]; then
 else
     echo "No replica.my.cnf at $REPLICA — skipping DB credential wiring."
 fi
+{env_vars_script}
 
 if [ -f "/data/project/{tool_name}/www/python/src/requirements.txt" ]; then
     echo "requirements.txt detected. Checking Python Virtual Environment..."
