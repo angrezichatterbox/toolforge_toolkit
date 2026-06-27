@@ -1,0 +1,28 @@
+# npm / Node.js artifacts
+node_modules/
+npm-debug.log*
+.npmrc
+
+# Python artifacts
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+build/
+dist/
+*.egg-info/
+.eggs/
+.venv/
+venv/
+
+# IDE / OS
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db
+
+# Local config (never ship user credentials!)
+.toolforge_config.json
+hello.md
