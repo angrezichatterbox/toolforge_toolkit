@@ -107,6 +107,33 @@ chmod -R 755 /data/project/{tool_name}/www/python/src
 # Remove deploy.sh from www/python/src to keep it clean
 rm -f /data/project/{tool_name}/www/python/src/deploy.sh
 
+# Wire Toolforge DB credentials from replica.my.cnf into the app's .env.
+# replica.my.cnf lives in the tool home and holds the [client] user/password.
+REPLICA="/data/project/{tool_name}/replica.my.cnf"
+ENVFILE="/data/project/{tool_name}/www/python/src/.env"
+if [ -f "$REPLICA" ]; then
+    DB_USER=$(sed -n 's/^[[:space:]]*user[[:space:]]*=[[:space:]]*//p' "$REPLICA" | head -1)
+    DB_PASS=$(sed -n 's/^[[:space:]]*password[[:space:]]*=[[:space:]]*//p' "$REPLICA" | head -1)
+    DB_SSL=$(sed -n 's/^[[:space:]]*disable-ssl[[:space:]]*=[[:space:]]*//p' "$REPLICA" | head -1)
+    [ -z "$DB_SSL" ] && DB_SSL=true
+    if grep -q "added by Deployr" "$ENVFILE" 2>/dev/null; then
+        echo ".env already contains Deployr DB credentials — leaving as-is."
+    else
+        # create if missing, append if it already exists
+        echo "" >> "$ENVFILE"
+        echo "# --- Toolforge DB credentials (added by Deployr) ---" >> "$ENVFILE"
+        echo "DB_USER=$DB_USER" >> "$ENVFILE"
+        echo "DB_PASSWORD=$DB_PASS" >> "$ENVFILE"
+        echo "DB_HOST=tools.db.svc.wikimedia.cloud" >> "$ENVFILE"
+        echo "DB_PORT=3306" >> "$ENVFILE"
+        echo "DB_SSL_DISABLED=$DB_SSL" >> "$ENVFILE"
+        chmod 640 "$ENVFILE"
+        echo "Wrote DB credentials from replica.my.cnf into .env (user=$DB_USER)."
+    fi
+else
+    echo "No replica.my.cnf at $REPLICA — skipping DB credential wiring."
+fi
+
 if [ -f "/data/project/{tool_name}/www/python/src/requirements.txt" ]; then
     echo "requirements.txt detected. Checking Python Virtual Environment..."
     echo "Creating virtual environment and installing requirements via a Toolforge Kubernetes Job..."
