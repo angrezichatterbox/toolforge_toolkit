@@ -1,6 +1,6 @@
 Metadata-Version: 2.4
 Name: deployr
-Version: 1.1.0
+Version: 1.1.1
 Summary: Interactive and scriptable CLI for managing Wikimedia Toolforge tools, webservices, and Kubernetes jobs.
 Author-email: Harikrishna T P <tpharikrishna5@gmail.com>
 License-Expression: MIT

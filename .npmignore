@@ -26,3 +26,4 @@ Thumbs.db
 # Local config (never ship user credentials!)
 .toolforge_config.json
 hello.md
+__pycache__/

@@ -87,7 +87,7 @@ def print_header():
         click.style("  DEPLOYR", fg="cyan", bold=True),
         click.style("  Toolforge Deployment Suite", fg="white"),
         click.style("  Wikimedia Developer Tools", fg="white"),
-        click.style("  v1.1.0", fg="bright_black"),
+        click.style("  v1.1.1", fg="bright_black"),
         "",
         "",
         "",
