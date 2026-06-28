@@ -39,68 +39,7 @@ _WRITABLE = [
 ]
 
 # ── Seed payloads ──────────────────────────────────────────────────────
-SEED = [
-    {
-        "id": "pdf-image-identifier", "name": "PDF Image Identifier", "tool": "picstalker",
-        "repo": "Ro-shni/PDF-IMAGE-IDENTIFIER",
-        "git_url": "https://github.com/Ro-shni/PDF-IMAGE-IDENTIFIER.git", "branch": "main",
-        "entry_file": "app.py", "app_var_name": "app", "python_version": "python3.11",
-        "language": "Python · Flask",
-        "description": "Classifies PDF pages as Image, Text, or Image+Text and uploads to Wikimedia Commons.",
-        "url": "https://picstalker.toolforge.org/", "live": 1, "status": "unknown",
-        "last_deploy": datetime.datetime(2026, 6, 25, 14, 2, 0), "sort_order": 1,
-    },
-    {
-        "id": "citation-hunt", "name": "Citation Hunt", "tool": "citation-hunt",
-        "repo": "wikimedia/citation-hunt",
-        "git_url": "https://github.com/wikimedia/citation-hunt.git", "branch": "main",
-        "entry_file": "app.py", "app_var_name": "app", "python_version": "python3.11",
-        "language": "Python · Flask",
-        "description": "Surfaces unsourced Wikipedia snippets that need citations.",
-        "url": "https://citationhunt.toolforge.org/", "live": 0, "status": "running",
-        "last_deploy": datetime.datetime(2026, 6, 20, 9, 15, 0), "sort_order": 2,
-    },
-    {
-        "id": "commons-uploader", "name": "Commons Batch Uploader", "tool": "commons-uploader",
-        "repo": "Ro-shni/commons-uploader",
-        "git_url": "https://github.com/Ro-shni/commons-uploader.git", "branch": "main",
-        "entry_file": "server.py", "app_var_name": "app", "python_version": "python3.11",
-        "language": "Python",
-        "description": "Bulk-uploads freely licensed media to Wikimedia Commons with OAuth.",
-        "url": "https://commons-uploader.toolforge.org/", "live": 0, "status": "stopped",
-        "last_deploy": datetime.datetime(2026, 6, 12, 18, 40, 0), "sort_order": 3,
-    },
-    {
-        "id": "wikitrends", "name": "WikiTrends", "tool": "wikitrends",
-        "repo": "Ro-shni/wikitrends",
-        "git_url": "https://github.com/Ro-shni/wikitrends.git", "branch": "develop",
-        "entry_file": "wsgi.py", "app_var_name": "app", "python_version": "python3.11",
-        "language": "Python · Flask",
-        "description": "Dashboards for trending article pageviews across language editions.",
-        "url": "https://wikitrends.toolforge.org/", "live": 0, "status": "running",
-        "last_deploy": datetime.datetime(2026, 6, 24, 11, 30, 0), "sort_order": 4,
-    },
-    {
-        "id": "lexeme-forms", "name": "Lexeme Forms", "tool": "lexeme-forms",
-        "repo": "wikimedia/lexeme-forms",
-        "git_url": "https://github.com/wikimedia/lexeme-forms.git", "branch": "main",
-        "entry_file": "app.py", "app_var_name": "app", "python_version": "python3.11",
-        "language": "Python · Flask",
-        "description": "Guided creation of Wikidata lexeme forms from templates.",
-        "url": "https://lexeme-forms.toolforge.org/", "live": 0, "status": "stopped",
-        "last_deploy": datetime.datetime(2026, 5, 30, 8, 0, 0), "sort_order": 5,
-    },
-    {
-        "id": "depictor", "name": "Depictor", "tool": "depictor",
-        "repo": "Ro-shni/depictor",
-        "git_url": "https://github.com/Ro-shni/depictor.git", "branch": "main",
-        "entry_file": "app.py", "app_var_name": "app", "python_version": "python3.11",
-        "language": "Python · Flask",
-        "description": "Crowdsources structured-data depicts statements for Commons images.",
-        "url": "https://depictor.toolforge.org/", "live": 0, "status": "deploying",
-        "last_deploy": datetime.datetime(2026, 6, 26, 7, 45, 0), "sort_order": 6,
-    },
-]
+SEED = []
 
 
 # ── Connectivity check + seeding ───────────────────────────────────────

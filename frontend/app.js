@@ -155,16 +155,20 @@
     if (tool) refreshStatus(tool, true);
   }
 
+  const KNOWN_STATUSES = new Set(["running", "stopped", "deploying", "error", "unknown"]);
+
   async function refreshStatus(tool, silent = false) {
     if (!state.apiOnline) { if (!silent) toast("error", "API offline", "Set the backend URL in Settings."); return; }
     try {
       await ensureActive(tool);
       const data = await api("/api/webservice/status");
-      tool.status = parseStatus(data.status, data.success);
+      // Use the clean mapped status from the components API when available,
+      // fall back to string-matching for legacy text responses.
+      tool.status = KNOWN_STATUSES.has(data.status) ? data.status : parseStatus(data.status, data.success);
       renderTools();
       if (state.drawerToolId === tool.id) {
-        appendLog(`webservice status → ${tool.status}`, "info");
-        appendLog((data.status || "").trim(), "remote");
+        appendLog(`webservice status → ${tool.status}${data.raw_state ? ` (${data.raw_state})` : ""}`, "info");
+        if (data.detail) appendLog(data.detail, "remote");
       }
     } catch (e) {
       if (!silent) toast("error", "Status check failed", e.message);

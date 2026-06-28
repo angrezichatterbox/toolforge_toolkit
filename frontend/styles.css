@@ -103,20 +103,18 @@ input, select, button { font-family: inherit; font-size: 0.875rem; }
 .topbar {
   position: sticky; top: 0; z-index: 30;
   display: flex; align-items: center; justify-content: space-between; gap: 16px;
-  padding: 10px 24px;
+  padding: 14px 28px;
   background: var(--background-base);
   border-bottom: 1px solid var(--border-subtle);
 }
-.brand { display: flex; align-items: center; gap: 11px; }
+.brand { display: flex; align-items: center; gap: 16px; }
 .brand__mark {
-  display: grid; place-items: center; width: 34px; height: 34px;
-  color: var(--color-progressive);
-  background: var(--bg-progressive);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius);
+  display: grid; place-items: center; width: 56px; height: 56px;
+  border-radius: 14px; overflow: hidden; flex-shrink: 0;
 }
-.brand__text h1 { font-family: var(--font-serif); font-size: 22px; font-weight: 700; line-height: 1; letter-spacing: -0.01em; }
-.brand__text p { font-size: 11.5px; color: var(--color-subtle); margin-top: 2px; }
+.brand__text h1 { font-family: 'Montserrat', var(--font-sans); font-size: 36px; font-weight: 800; line-height: 1; letter-spacing: -0.02em; }
+.brand__r { color: #3366CC; }
+.brand__text p { font-size: 13px; color: var(--color-subtle); margin-top: 4px; font-weight: 500; letter-spacing: 0.005em; }
 .topbar__actions { display: flex; align-items: center; gap: 8px; }
 
 .api-pill {
