@@ -142,6 +142,15 @@ def _seed():
             db.session.add(Tool(**row))
     db.session.commit()
 
+def _seed():
+    """Insert seed rows via ORM."""
+    for row in SEED:
+        if not Tool.query.get(row["id"]):
+            db.session.add(Tool(**row))
+    db.session.commit()
+
+
+# ── CRUD helpers (same public API as before) ───────────────────────────
 
 # ── CRUD helpers ───────────────────────────────────────────────────────
 
