@@ -56,16 +56,72 @@ def save_config(config):
         return False
 
 def print_header():
-    """Prints a beautiful CLI header."""
-    click.echo("\n" + "=" * 65)
-    click.secho("    ____             __                                          ", fg="cyan", bold=True)
-    click.secho("   / __ \\___  ____  / /___  __  ______                           ", fg="cyan", bold=True)
-    click.secho("  / / / / _ \\/ __ \\/ / __ \\/ / / / ___/                          ", fg="cyan", bold=True)
-    click.secho(" / /_/ /  __/ /_/ / / /_/ / /_/ / /                              ", fg="cyan", bold=True)
-    click.secho("/_____/\\___/ .___/_/\\____/\\__, /_/                               ", fg="cyan", bold=True)
-    click.secho("          /_/            /____/                                  ", fg="cyan", bold=True)
-    click.secho("               Deployr - Toolforge Deployment Suite v1.1.0       ", fg="blue", bold=True)
-    click.echo("=" * 65 + "\n")
+    """Compact header using the Wikimedia ASCII logo + deployr info side by side."""
+    _LOGO = [
+        "             %%%%%%%%%%%%             ",
+        "         %%%%%%%%%%%%%%%%%%%%         ",
+        "      %%%%%%%%%%      %%%%%%%%%%      ",
+        "    %%%%%%%                %%%%%%%    ",
+        "    %%%%%                    %%%%%    ",
+        "         %        ##                  ",
+        " #          %%% ############        # ",
+        " ####      % %% #####            #### ",
+        "#####     %%%  % ##              #####",
+        "####    ++++++++++++++++++++++*   ####",
+        "####    +++++++++++++++++++++     ####",
+        "#####     ++++++++++++++++       #####",
+        " ####          ++++++++++        #### ",
+        " #####      +++++++++++++++     ##### ",
+        "  #####     +++++++++++++++    #####  ",
+        "   ######                    ######   ",
+        "    #######                #######    ",
+        "      ##########      ##########      ",
+        "         ########    ########         ",
+        "             ####    ####             ",
+    ]
+    _INFO = [
+        "",
+        "",
+        "",
+        "",
+        click.style("  DEPLOYR", fg="cyan", bold=True),
+        click.style("  Toolforge Deployment Suite", fg="white"),
+        click.style("  Wikimedia Developer Tools", fg="white"),
+        click.style("  v1.1.0", fg="bright_black"),
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+    ]
+
+    def _colour(line):
+        out = []
+        for ch in line:
+            if ch == "%":
+                out.append(click.style(ch, fg="yellow", bold=True))
+            elif ch == "#":
+                out.append(click.style(ch, fg="blue", bold=True))
+            elif ch == "+":
+                out.append(click.style(ch, fg="cyan", bold=True))
+            elif ch == "*":
+                out.append(click.style(ch, fg="white", bold=True))
+            else:
+                out.append(ch)
+        return "".join(out)
+
+    click.echo()
+    for i, line in enumerate(_LOGO):
+        txt = _INFO[i] if i < len(_INFO) else ""
+        click.echo(f"  {_colour(line)}{txt}")
+    click.echo()
 
 def configure_settings(config):
     """Configures or updates settings."""
@@ -681,9 +737,9 @@ def cli(ctx):
     """Deployr - Interactive and scriptable management suite for Wikimedia Toolforge."""
     if ctx.invoked_subcommand is None:
         config = load_config()
-        print_header()
         config = check_config(config)
         interactive_console(config)
+
 
 @cli.command("ssh")
 def cli_ssh():
