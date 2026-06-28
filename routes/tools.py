@@ -49,15 +49,16 @@ def list_tools_endpoint():
 @tools_bp.route("/api/tools/inspect", methods=["POST"])
 def inspect_tool_endpoint():
     """Parse a pasted git URL into a tool record (with GitHub enrichment) — not saved."""
-    if not DB_OK:
-        return jsonify({"success": False, "message": "database unavailable"}), 503
     url = (request.json or {}).get("url", "").strip()
     if not url:
         return jsonify({"success": False, "message": "Missing 'url'."}), 400
     derived = db.derive_from_url(url)
     if derived.get("_host") == "github":
         derived.update(_enrich_from_github(derived.get("_owner"), derived.get("_repo")))
-    derived["id"] = db.ensure_unique_id(derived.get("tool") or derived.get("id"))
+    if DB_OK:
+        derived["id"] = db.ensure_unique_id(derived.get("tool") or derived.get("id"))
+    else:
+        derived["id"] = db.slugify(derived.get("tool") or derived.get("id") or "tool")
     derived["tool"] = derived["id"]
     derived["url"] = f"https://{derived['tool']}.toolforge.org/"
     for k in ("_host", "_owner", "_repo"):

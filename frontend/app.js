@@ -27,7 +27,7 @@
     filter: "all",
     search: "",
     drawerToolId: null,
-    apiOnline: false,
+    apiOnline: true,
     addDraft: null,
   };
 
@@ -48,7 +48,7 @@
   }
   function persistTool(tool) {
     let saved = {};
-    try { saved = JSON.parse(localStorage.getItem(LS.tools) || "{}"); } catch (_) {}
+    try { saved = JSON.parse(localStorage.getItem(LS.tools) || "{}"); } catch (_) { }
     saved[tool.id] = {
       tool: tool.tool, git_url: tool.git_url, branch: tool.branch,
       entry_file: tool.entry_file, app_var_name: tool.app_var_name,
@@ -109,7 +109,7 @@
       const data = await api("/api/tools");
       if (Array.isArray(data.tools) && data.tools.length) {
         let saved = {};
-        try { saved = JSON.parse(localStorage.getItem(LS.tools) || "{}"); } catch (_) {}
+        try { saved = JSON.parse(localStorage.getItem(LS.tools) || "{}"); } catch (_) { }
         state.tools = data.tools.map((t) => (saved[t.id] ? { ...t, ...saved[t.id] } : t));
         renderTools();
       } else if (data.error) {
