@@ -1,6 +1,44 @@
 import os
+import json
+from pathlib import Path
 
+CONFIG_FILE_NAME = ".toolforge_config.json"
 DEFAULT_BASTION_HOST = "login.toolforge.org"
+
+
+def get_config_path():
+    return Path.home() / CONFIG_FILE_NAME
+
+
+def load_config():
+    """Load config from file, falling back to env vars and then defaults."""
+    config_path = get_config_path()
+    config = {
+        "username": "",
+        "tool_name": "",
+        "ssh_key": os.environ.get("TOOLFORGE_SSH_KEY", ""),
+        "bastion_host": os.environ.get("TOOLFORGE_BASTION_HOST", DEFAULT_BASTION_HOST),
+    }
+    if config_path.is_file():
+        try:
+            with open(config_path, "r", encoding="utf-8") as f:
+                saved = json.load(f)
+            config.update({k: v for k, v in saved.items() if v})
+        except Exception as e:
+            print(f"Error loading config from {config_path}: {e}")
+    return config
+
+
+def save_config(config):
+    """Save configuration to the user's home directory."""
+    config_path = get_config_path()
+    try:
+        with open(config_path, "w", encoding="utf-8") as f:
+            json.dump(config, f, indent=4)
+        return True
+    except Exception as e:
+        print(f"Error saving config: {e}")
+        return False
 
 
 def build_config(data: dict) -> dict:

@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from services.config_service import build_config, validate_config
+from services.config_service import load_config, build_config, validate_config
 from services.deploy_service import deploy_from_url
 
 deploy_bp = Blueprint('deploy', __name__)
@@ -12,7 +12,12 @@ def deploy_endpoint():
     if not url:
         return jsonify({"success": False, "message": "Missing 'url' parameter in request body"}), 400
 
-    config = build_config(data)
+    # Start from saved config (has username, bastion_host, ssh_key), then
+    # let request body override tool_name and any other per-deploy values.
+    config = load_config()
+    runtime = build_config(data)
+    if runtime.get("tool_name"):
+        config["tool_name"] = runtime["tool_name"]
 
     missing = validate_config(config)
     if missing:
